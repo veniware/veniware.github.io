@@ -1,11 +1,10 @@
 :root {
     --sidemenu-width: 360px;
-    --theme-color: #ff301d;
-    --select-color: #E11;
+    --theme-color: #f32;
+    --select-color: #f32;
     --control-color: rgb(180,180,180);
     --global-font-size: 16px;
     --global-font-family: "Segoe UI";
-    --workplace-bg: #DDD;
     --toolbar-bg: linear-gradient(to bottom, rgb(96,96,96)0%, rgb(72,72,72)92%, rgb(64,64,64)100%);
 }
 

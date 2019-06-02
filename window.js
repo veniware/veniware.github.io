@@ -475,6 +475,26 @@ class Window {
         //else
         //    this.content.style.color = "whitesmoke";
     }
+
+    AddCheckBoxLabel(parent, checkbox, label) {
+        let id = new Date().getTime() + Math.random() * 1000;
+        checkbox.id = "id" + id;
+
+        let newLabel = document.createElement("label");
+        newLabel.innerHTML = label;
+        newLabel.setAttribute("for", "id" + id);
+        newLabel.setAttribute("tabindex", "0");
+        newLabel.style.width = "80%";
+        parent.appendChild(newLabel);
+
+        newLabel.onkeydown = event => {
+            if (event.key == " " || event.key == "Enter") {
+                checkbox.checked = !checkbox.checked;
+                event.preventDefault();
+                if (checkbox.onchange) checkbox.onchange();
+            }
+        };
+    }
 }
 
 function body_resize(event) {
@@ -588,5 +608,3 @@ function alignIcon(ignoreActive) {
     }
 
 }
-
-new Window();
