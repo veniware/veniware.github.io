@@ -121,6 +121,14 @@ class MacLookup extends Window {
                     parseInt(macaddr.toLowerCase().substring(0, 2), 16)
                 ]);
 
+                let label = document.createElement("div");
+                result.appendChild(label);
+
+                if (isNaN(target)) {
+                    label.innerHTML = "not a valid mac address";
+                    return;
+                }
+
                 let namesBegin = this.BytesToInt([
                     bytes.charCodeAt(0) & 0xff,
                     bytes.charCodeAt(1) & 0xff,
@@ -133,7 +141,7 @@ class MacLookup extends Window {
 
                 let pivot, current;
 
-                do { //binary search:
+                do { //binary search
                     pivot = ((low + high) / 2);
                     pivot = pivot - (pivot % 7) + 4;
 
@@ -146,11 +154,6 @@ class MacLookup extends Window {
                     if (target < current) high = pivot;
                     if (target > current) low = pivot;
                 } while (current != target && high - low > 7);
-
-                console.log(low, high, "  -  ", pivot);
-
-                let label = document.createElement("div");
-                result.appendChild(label);
 
                 if (target == current) {
                     let manufacturer = "";
