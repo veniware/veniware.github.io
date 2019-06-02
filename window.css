@@ -265,11 +265,6 @@
                 filter 0s;
 }
 
-/*.bar-icon:active {
-    transition-delay: .4s;
-    box-shadow: rgba(48,48,48,.33) 0 0 1px 32px inset;
-}*/
-
 .bar-icon > .icon {
     position: relative;
     left: 4%;
