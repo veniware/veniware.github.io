@@ -6,7 +6,7 @@
     --global-font-size: 16px;
     --global-font-family: "Segoe UI";
     --workplace-bg: #DDD;
-    --toolbar-bg: linear-gradient(to bottom, rgb(16,16,16)0%, rgb(32,32,32)92%, rgb(0,0,0)100%);
+    --toolbar-bg: linear-gradient(to bottom, rgb(96,96,96)0%, rgb(72,72,72)92%, rgb(64,64,64)100%);
 }
 
 body {
@@ -14,7 +14,6 @@ body {
     font-family: var(--global-font-family);
     background-color: #F5F5F5;
     overflow: hidden;
-    /*zoom: 100%;*/
     user-select: none;
     -webkit-user-select: none;
     -webkit-user-drag: none;
