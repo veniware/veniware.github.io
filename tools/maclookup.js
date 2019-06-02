@@ -2,10 +2,17 @@ class MacLookup extends Window {
     constructor() {
         super();
 
+        if (document.head.querySelectorAll("link[href$='tools/tools.css']").length == 0) {
+            let csslink = document.createElement("link");
+            csslink.rel = "stylesheet";
+            csslink.href = "tools/tools.css";
+            document.head.appendChild(csslink);
+        }
+
         this.hashtable = {}; //contains all elements
 
         this.setTitle("MAC lookup");
-        this.setIcon("res/maclookup.svgz");
+        this.setIcon("ico/maclookup.svgz");
 
         this.list = document.createElement("div");
         this.list.style.position = "absolute";
@@ -155,19 +162,10 @@ class MacLookup extends Window {
                         bytes.charCodeAt(pivot + 6) & 0xff
                     ]);
 
-                    console.log(namesBegin);
-
-                    console.log(bytes.charCodeAt(namesBegin + name_index) & 0xff);
-                    console.log(bytes.charCodeAt(namesBegin + name_index + 1) & 0xff);
-                    console.log(bytes.charCodeAt(namesBegin + name_index + 2) & 0xff);
-                    console.log(bytes.charCodeAt(namesBegin + name_index + 3) & 0xff);
-                    console.log(bytes.charCodeAt(namesBegin + name_index + 4) & 0xff);
-
                     let char = null;
                     do {
                         char = bytes.charCodeAt(namesBegin + name_index++) & 0xff;
                         manufacturer += String.fromCharCode(char);
-                        console.log(char);
                     } while (char != 0 && manufacturer.length < 512);
 
                     label.innerHTML = manufacturer;
@@ -200,5 +198,3 @@ class MacLookup extends Window {
     }
 
 }
-
-new MacLookup();
