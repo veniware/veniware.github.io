@@ -1,0 +1,43 @@
+#deskmenu {
+	z-index: -1;
+	width: 80%;
+	height: 60%;
+	min-height: 200px;
+	margin: 10vh auto;
+	transition: .2s;
+}
+
+@media screen and (max-height: 300px) {
+	#deskmenu {
+		margin: 0 auto;
+	}
+}
+
+
+#analog_clock {
+	filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
+	position: absolute;
+	right: 16px;
+	bottom: 16px;
+}
+
+#analog_clock_h,
+#analog_clock_m {
+	stroke: #202020;
+	transition: .8s;
+	transform-origin: 50% 50%;
+}
+
+#date_calendar {
+	filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
+	position: absolute;
+	right: 128px;
+	bottom: 16px;
+}
+
+@media only screen and (max-height: 400px) {
+	#analog_clock,
+	#date_calendar {
+		display: none;
+	}
+}

@@ -1,0 +1,49 @@
+:root {
+    --sidemenu-width: 360px;
+    --theme-color: #ff301d;
+    --select-color: #E11;
+    --control-color: rgb(180,180,180);
+    --global-font-size: 16px;
+    --global-font-family: "Segoe UI";
+    --workplace-bg: #DDD;
+    --toolbar-bg: linear-gradient(to bottom, rgb(16,16,16)0%, rgb(32,32,32)92%, rgb(0,0,0)100%);
+}
+
+body {
+    font-size: var(--global-font-size);
+    font-family: var(--global-font-family);
+    background-color: #F5F5F5;
+    overflow: hidden;
+    /*zoom: 100%;*/
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+::selection {
+    background: var(--select-color);
+    color: #fff;
+}
+
+
+::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #777;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+@media print {
+    body { display: none; }
+}
