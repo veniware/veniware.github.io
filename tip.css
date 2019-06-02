@@ -48,5 +48,5 @@
 
 *[tip]:active::before, *[tip]:active::after {
 	transition-delay: .25s;
-	transform: translateY(-16px) scale(.95);
+	transform: translateY(-8px);
 }
