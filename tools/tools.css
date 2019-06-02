@@ -1,0 +1,11 @@
+.input-box-dark {
+    background-color: rgb(48,48,48) !important;
+    margin: 0 0 !important;
+    color: white;
+    font-size: 16px;
+    border: 0;
+    outline: none;
+    box-sizing: border-box;
+    padding: 4px;
+}
+
