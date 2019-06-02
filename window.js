@@ -73,7 +73,6 @@ class Window {
 
         this.task = document.createElement("div");
         this.task.className = "bar-icon";
-        this.task.style.borderColor = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
         this.task.style.left = 2 + $w.array.length * 64 + "px";
         bottombar.appendChild(this.task);
 
@@ -339,7 +338,6 @@ class Window {
         }
 
         this.task.style.backgroundColor = "rgb(" + this.themeColor[0] + "," + this.themeColor[1] + "," + this.themeColor[2] + ")";
-        //if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 < 128) this.icon.style.filter = "brightness(6)";
 
         if (this.win.style.zIndex < $w.count) this.win.style.zIndex = ++$w.count;
 
