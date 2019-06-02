@@ -17,7 +17,7 @@ let $menu = [
     { name:"Password generator", ico:"ico/passgen.svgz",   f:()=>new Passgen(),   key:["tools", "js"] },
     { name:"Network calculator", ico:"ico/netcalc.svgz",   f:()=>new Netcalc(),   key:["tools", "js"] },
     { name:"MAC lookup",         ico:"ico/maclookup.svgz", f:()=>new MacLookup(), key:["tools", "js"] },
-    { name:"Locate IP",          ico:"ico/locate.svgz",    f:()=>LocateIp(),      key:["tools", "js"] }
+    { name:"Locate IP",          ico:"ico/locate.svgz",    f:()=>new LocateIp(),      key:["tools", "js"] }
 ];
 
 function showCategory(key) {
