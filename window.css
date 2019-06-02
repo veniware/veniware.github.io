@@ -255,11 +255,13 @@
 }
 
 .bar-icon {
+    position: absolute;
     top: 2px;
     width: 60px;
     height: 60px;
     border-radius: 12.5%;
-    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid rgb(56, 56, 56);
 
     transition: .2s,
                 filter 0s;

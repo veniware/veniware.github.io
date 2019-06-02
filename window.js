@@ -75,11 +75,13 @@ class Window {
 
         this.task = document.createElement("div");
         this.task.className = "bar-icon";
+        this.task.style.borderColor = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
         this.task.style.left = 2 + $w.array.length * 64 + "px";
         bottombar.appendChild(this.task);
 
         this.icon = document.createElement("div");
         this.icon.className = "icon";
+        this.icon.style.filter = "brightness(6)";
         this.task.appendChild(this.icon);
 
         this.content = document.createElement("div");
@@ -197,12 +199,11 @@ class Window {
         btnMinimize.onmouseup = (event) => { if (event.button == 0 && $w.control_pressed == this) { $w.control_pressed = null; this.Minimize(); } };
 
         this.setTitle("Title");
-        $w.array.push(this);
-        //alignIcon(false);
-
+        this.setIcon("ico/gear.svgz");
         this.setThemeColor(this.color);
-        this.BringToFront();
 
+        $w.array.push(this);
+        this.BringToFront();
         alignIcon(false);
 
         if (onMobile || $w.always_maxxed) this.Toogle();
@@ -308,7 +309,7 @@ class Window {
             this.task.style.top = "2px";
             this.task.style.borderRadius = "12.5%";
             this.task.style.backgroundColor = "rgba(0,0,0,0)";
-            this.icon.style.filter = "none";
+            //this.icon.style.filter = "none";
 
             $w.focused = null;
         }
@@ -331,7 +332,7 @@ class Window {
             $w.array[i].task.style.top = "2px";
             $w.array[i].task.style.borderRadius = "12.5%";
             $w.array[i].task.style.backgroundColor = "rgba(0,0,0,0)";
-            $w.array[i].icon.style.filter = "none";
+            //$w.array[i].icon.style.filter = "none";
         }
 
         if (this.isMaximized) {
@@ -340,7 +341,7 @@ class Window {
         }
 
         this.task.style.backgroundColor = "rgb(" + this.themeColor[0] + "," + this.themeColor[1] + "," + this.themeColor[2] + ")";
-        if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 < 128) this.icon.style.filter = "brightness(6)";
+        //if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 < 128) this.icon.style.filter = "brightness(6)";
 
         if (this.win.style.zIndex < $w.count) this.win.style.zIndex = ++$w.count;
 
