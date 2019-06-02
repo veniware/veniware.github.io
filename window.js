@@ -33,8 +33,6 @@ let $w = {
     count            : 0,
 };
 
-
-
 bottombar.onmousedown = event => { if (event.button == 1) event.preventDefault(); }; //prevent mid-mouse scroll
 
 document.body.onresize    = body_resize;

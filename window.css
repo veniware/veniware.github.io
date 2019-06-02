@@ -126,7 +126,7 @@
 
     background-repeat: no-repeat;
     background-size: cover;
-    filter: invert(1);
+    filter: brightness(6);
 }
 
 .window > .toolbox {

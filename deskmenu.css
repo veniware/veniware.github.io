@@ -1,21 +1,13 @@
 #deskmenu {
 	z-index: -1;
-	width: 80%;
-	height: 60%;
-	min-height: 200px;
-	margin: 10vh auto;
+	width: 95%;
+	height: calc(100% - 192px);
+	margin: 40px auto;
 	transition: .2s;
 }
 
-@media screen and (max-height: 300px) {
-	#deskmenu {
-		margin: 0 auto;
-	}
-}
-
-
 #analog_clock {
-	filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
+	/*filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);*/
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
@@ -29,15 +21,23 @@
 }
 
 #date_calendar {
-	filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
+	/*filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);*/
 	position: absolute;
 	right: 128px;
 	bottom: 16px;
 }
 
-@media only screen and (max-height: 400px) {
+@media only screen and (max-height: 420px) {
+	#deskmenu {
+		margin: 16px auto;
+		height: calc(100% - 32px);
+	}
+
 	#analog_clock,
 	#date_calendar {
-		display: none;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(96px);
+		transition: .4s;
 	}
 }
