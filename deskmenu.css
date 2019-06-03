@@ -29,11 +29,13 @@
 #category {
     left: 5%;
     top: 40px;
+    max-height: 140px;
+    overflow: hidden;
 }
 
 #grid {
     left: 5%;
-    top: 180px;
+    top: 224px;
     bottom: 128px;
     overflow-y: auto;
 }
@@ -56,7 +58,7 @@
     }
 
     #grid {
-        top: 140px;
+        top: 148px;
         bottom: 8px;
     }
 
@@ -87,10 +89,29 @@
     text-overflow: ellipsis;
 }
 
+.deskicon,
 #icoTools {
+    display: inline-block;
     position: relative;
     width: 96px;
-    background-size: cover;
+}
+
+.deskicon {
+    padding: 8px 16px;
+}
+
+    .deskicon > img {
+        width: 96px;
+        height: 96px;
+        transition: .2s;
+    }
+
+    .deskicon:hover > img {
+        transform: scale(1.1);
+    }
+
+#icoTools {
+    padding-right: 8px;
 }
 
 #icoTools > div > .front {
