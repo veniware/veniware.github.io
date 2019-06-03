@@ -18,6 +18,23 @@
 }
 
 
+#booger {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 48px;
+    height: 48px;
+    background: var(--booger-bg);
+    background-color: var(--booger-bg);
+    border-radius: 4px 8px 48px 8px;
+    box-shadow: rgba(0,0,0,.2) 2px 2px 2px;
+    z-index: 5;
+
+    transition: all .25s;
+    transition-timing-function: cubic-bezier(0, 1.75, 1, 1);
+}
+
+
 #category,
 #grid {
     position: absolute;
@@ -45,7 +62,7 @@
     text-align: center;
     font-weight: 600;
     border-radius: 4px;
-    transition: .2s;
+    transition: .1s;
 }
 
 #grid > div:hover {
@@ -100,15 +117,15 @@
     padding: 8px 16px;
 }
 
-    .deskicon > img {
-        width: 96px;
-        height: 96px;
-        transition: .2s;
-    }
+.deskicon > img {
+    width: 96px;
+    height: 96px;
+    transition: .2s;
+}
 
-    .deskicon:hover > img {
-        transform: scale(1.1);
-    }
+.deskicon:hover > img {
+    transform: scale(1.1);
+}
 
 #icoTools {
     padding-right: 8px;
