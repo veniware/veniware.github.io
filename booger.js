@@ -1,10 +1,9 @@
 let booger = document.getElementById("booger");
 
-addEventListener("mousemove", event => {
-       
+addEventListener("mousemove", event => {       
     let y = 0;
 
-    if (event.x < 250) y = event.y - 32;
+    if (event.x < 200) y = event.y - 32;
     if (event.x > 72) y *= (300 - event.x) / 250;
 
     if (y < 16) {
@@ -23,5 +22,4 @@ addEventListener("mousemove", event => {
     }
     
     booger.style.top = y + "px";
-
 });
