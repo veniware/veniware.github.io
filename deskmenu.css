@@ -92,6 +92,7 @@
     font-size: 14px;
     display: inline-block;
     padding: 4px;
+    margin: 4px;
 }
 
 #grid > div > img { /*icon*/

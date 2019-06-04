@@ -1,7 +1,9 @@
 let booger = document.getElementById("booger");
 let last_y = 0;
 
-addEventListener("mousemove", event => {       
+addEventListener("mousemove", event => {      
+    if (onMobile) return;
+
     let y = 0;
 
     if (event.x < 200) y = event.y - 32;
@@ -25,3 +27,7 @@ addEventListener("mousemove", event => {
     booger.style.top = y + "px";
     last_y = y;
 });
+
+booger.onclick = () => {
+
+};
