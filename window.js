@@ -306,7 +306,7 @@ class Window {
             this.task.style.top = "2px";
             this.task.style.borderRadius = "12.5%";
             this.task.style.backgroundColor = "rgba(0,0,0,0)";
-            //this.icon.style.filter = "none";
+            this.icon.style.filter = "none";
 
             $w.focused = null;
         }
@@ -329,7 +329,7 @@ class Window {
             $w.array[i].task.style.top = "2px";
             $w.array[i].task.style.borderRadius = "12.5%";
             $w.array[i].task.style.backgroundColor = "rgba(0,0,0,0)";
-            //$w.array[i].icon.style.filter = "none";
+            $w.array[i].icon.style.filter = "none";
         }
 
         if (this.isMaximized) {
@@ -338,6 +338,7 @@ class Window {
         }
 
         this.task.style.backgroundColor = "rgb(" + this.themeColor[0] + "," + this.themeColor[1] + "," + this.themeColor[2] + ")";
+        if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 < 128) this.icon.style.filter = "brightness(6)";
 
         if (this.win.style.zIndex < $w.count) this.win.style.zIndex = ++$w.count;
 
