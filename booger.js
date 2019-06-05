@@ -12,7 +12,7 @@ addEventListener("mousemove", event => {
         booger.style.borderRadius = "4px 8px 48px 8px";
         booger.style.height = "48px";
 
-    } else if (y > container.clientHeight - 48 - 24) {
+    } else if (y > container.clientHeight - 72) {
         y = container.clientHeight - 48;
         booger.style.borderRadius = "8px 48px 8px 4px";
         booger.style.height = "48px";
