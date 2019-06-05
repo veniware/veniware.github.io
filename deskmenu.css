@@ -30,10 +30,17 @@
     box-shadow: rgba(0,0,0,.2) 2px 2px 2px;
     z-index: 5;
 
-    transition: .25s;
+    transform-origin: 0 50%;
+
+    transition: all .25s;    
     transition-timing-function: cubic-bezier(0,1.5,1,1);
 }
 
+@supports (-ms-ime-align:auto) {
+    #booger {
+        transition: border-radius .2s, height .2s;
+    }
+}
 
 #category,
 #grid {

@@ -21,7 +21,8 @@ addEventListener("mousemove", event => {
         booger.style.height = "64px";
         booger.style.borderRadius = "12px 40px 40px 12px";
     }    
-    booger.style.top = y + "px";
+
+    booger.style.transform = "translateY(" + y + "px)";
 });
 
 document.body.onmouseleave = () => {
