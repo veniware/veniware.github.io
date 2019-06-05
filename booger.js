@@ -28,6 +28,6 @@ addEventListener("mousemove", event => {
     last_y = y;
 });
 
-booger.onclick = () => {
+booger.onclick = ()=> {
 
 };
