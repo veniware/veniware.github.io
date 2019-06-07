@@ -10,6 +10,7 @@
 }
 
 .list-element {
+    font-weight: 500;
     position: relative;
     height: 32px;
     margin: 0 0 2px 0;

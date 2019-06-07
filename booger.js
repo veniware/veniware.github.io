@@ -1,6 +1,6 @@
 let booger = document.getElementById("booger");
 
-addEventListener("mousemove", event => {      
+document.body.addEventListener("mousemove", event => {      
     if (onMobile) return;
 
     let y = 0;
