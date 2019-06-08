@@ -2,6 +2,13 @@ class LocateIp extends Window {
     constructor() {
         super();
 
+        if (document.head.querySelectorAll("link[href$='tools.css']").length == 0) {
+            let csslink = document.createElement("link");
+            csslink.rel = "stylesheet";
+            csslink.href = "tools.css";
+            document.head.appendChild(csslink);
+        }
+
         this.hashtable = {}; //contains all elements
 
         this.setTitle("Locate IP");
