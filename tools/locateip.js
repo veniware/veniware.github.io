@@ -224,7 +224,7 @@ class LocateIp extends Window {
                     divFlag.style.width = "24px";
                     divFlag.style.height = "18px";
                     divFlag.style.margin = "8px 8px 0 0";
-                    divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svgz)";
+                    divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svg)";
                     divFlag.style.animation = "fade-in .2s";
                     result.appendChild(divFlag);
 
