@@ -155,7 +155,7 @@ class MacLookup extends Window {
                     if (target > current) low = pivot;
                 } while (current != target && high - low > 7);
 
-                if (target == current) {
+                if (target == current) { //found
                     let manufacturer = "";
 
                     let name_index = this.BytesToInt([
@@ -189,7 +189,7 @@ class MacLookup extends Window {
     BytesToInt(array) {
         var value = 0;
         for (var i = array.length - 1; i >= 0; i--)
-            value = (value * 256) + array[i];
+            value = Number(value * 256) + Number(array[i]);
         return value;
     };
 

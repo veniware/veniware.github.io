@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\res",
+    "\\tools"
   ],
+  "SelectedNode": "\\tools.css",
   "PreviewInSolutionExplorer": false
 }

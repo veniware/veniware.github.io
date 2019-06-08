@@ -2,17 +2,10 @@ class LocateIp extends Window {
     constructor() {
         super();
 
-        if (document.head.querySelectorAll("link[href$='tools.css']").length == 0) {
-            let csslink = document.createElement("link");
-            csslink.rel = "stylesheet";
-            csslink.href = "tools.css";
-            document.head.appendChild(csslink);
-        }
-
         this.hashtable = {}; //contains all elements
 
         this.setTitle("Locate IP");
-        this.setIcon("ico/locate.svgz");
+        this.setIcon("res/locate.svgz");
 
         this.list = document.createElement("div");
         this.list.style.position = "absolute";
@@ -131,50 +124,145 @@ class LocateIp extends Window {
 
         remove.onclick = () => { this.Remove(ipaddr); };
 
+        let ipBytes = ipaddr.split(".");
+        if (ipBytes.length < 4) {
+            result.innerHTML = "not a valid ip address";
+            return;
+        }
+
+        for (let i = 0; i < 4; i++)
+            if (isNaN(ipBytes[i]) || ipBytes[i] < 0 || ipBytes[i] > 255) {
+                result.innerHTML = "not a valid ip address";
+                return;
+            }
+
+        let target = this.BytesToInt([
+            ipBytes[3],
+            ipBytes[2],
+            ipBytes[1],
+            ipBytes[0]
+        ]);
+
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                let split = xhr.responseText.split(";");
+                let bytes = xhr.responseText;
 
-                if (split.length == 1) {
-                    let label = document.createElement("div");
-                    label.innerHTML = split[0];
-                    result.appendChild(label);
-                    return;
+                let namesBegin = this.BytesToInt([
+                    bytes.charCodeAt(0) & 0xff,
+                    bytes.charCodeAt(1) & 0xff,
+                    bytes.charCodeAt(2) & 0xff,
+                    bytes.charCodeAt(3) & 0xff
+                ]);
+
+                let index = 4;
+                let from, to;
+                while (index < namesBegin) {
+                    from = this.BytesToInt([
+                        0 & 0xff,
+                        bytes.charCodeAt(index) & 0xff,
+                        bytes.charCodeAt(index + 1) & 0xff,
+                        ipBytes[3] & 0xff
+                    ]);
+
+                    to = this.BytesToInt([
+                        255 & 0xff,
+                        bytes.charCodeAt(index + 2) & 0xff,
+                        bytes.charCodeAt(index + 3) & 0xff,
+                        ipBytes[3] & 0xff
+                    ]);
+
+                    if (target >= from && target <= to) break;
+                    index += 26;
                 }
 
-                let divFlag = document.createElement("div");
-                divFlag.style.width = "24px";
-                divFlag.style.height = "18px";
-                divFlag.style.margin = "8px 8px 0 0";
-                divFlag.style.backgroundImage = "url(flags/" + split[0].toLocaleLowerCase() + ".svgz)";
-                divFlag.style.animation = "fade-in .2s";
-                result.appendChild(divFlag);
+                if (target >= from && target <= to) { //found
+                    let fl = bytes[index + 4] + bytes[index + 5];
+                    let p = [null, null, null, null];
 
-                result.innerHTML += split[1] + ", " + split[2] + ", " + split[3];
 
-                if (split[4].length > 0 && split[4] != "0,0") {
-                    let divLocation = document.createElement("div");
-                    divLocation.style.position = "absolute";
-                    divLocation.style.width = "24px";
-                    divLocation.style.height = "24px";
-                    divLocation.style.right = "32px";
-                    divLocation.style.top = "4px";
-                    divLocation.style.backgroundSize = "contain";
-                    divLocation.style.backgroundImage = "url(res/locate.svgz)";
-                    divLocation.style.filter = "invert(1)";
-                    divLocation.style.cursor = "pointer";
-                    element.appendChild(divLocation);
+                    for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 6 + i) & 0xff;
+                    let ptr1 = this.BytesToInt(p);
 
-                    divLocation.onclick = () => window.open("http://www.google.com/maps/place/" + split[4]);
-                }
+                    for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 10 + i) & 0xff;
+                    let ptr2 = this.BytesToInt(p);
+
+                    for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 14 + i) & 0xff;
+                    let ptr3 = this.BytesToInt(p);
+
+                    console.log(namesBegin, ptr1, ptr2, ptr3);
+
+                    let s1 = "";
+                    for (let i = 0; i < 256; i++) {
+                        let b = bytes.charCodeAt(namesBegin + ptr1 + i) & 0xff;
+                        if (b == 0) break;
+                        s1 += String.fromCharCode(b);
+                    }
+
+                    let s2 = "";
+                    for (let i = 0; i < 256; i++) {
+                        let b = bytes.charCodeAt(namesBegin + ptr2 + i) & 0xff;
+                        if (b == 0) break;
+                        s2 += String.fromCharCode(b);
+                    }
+
+                    let s3 = "";
+                    for (let i = 0; i < 256; i++) {
+                        let b = bytes.charCodeAt(namesBegin + ptr3 + i) & 0xff;
+                        if (b == 0) break;
+                        s3 += String.fromCharCode(b);
+                    }
+
+                    let divFlag = document.createElement("div");
+                    divFlag.style.width = "24px";
+                    divFlag.style.height = "18px";
+                    divFlag.style.margin = "8px 8px 0 0";
+                    divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svgz)";
+                    divFlag.style.animation = "fade-in .2s";
+                    result.appendChild(divFlag);
+
+                    result.innerHTML += s1 + ", " + s2 + ", " + s3;
+
+                    let lon = 0;
+                    let lat = 0;
+
+                    if (lon != 0 && lat != 0) {
+                        let divLocation = document.createElement("div");
+                        divLocation.style.position = "absolute";
+                        divLocation.style.width = "24px";
+                        divLocation.style.height = "24px";
+                        divLocation.style.right = "32px";
+                        divLocation.style.top = "4px";
+                        divLocation.style.backgroundSize = "contain";
+                        divLocation.style.backgroundImage = "url(res/locate.svgz)";
+                        divLocation.style.filter = "invert(1)";
+                        divLocation.style.cursor = "pointer";
+                        element.appendChild(divLocation);
+
+                        divLocation.onclick = () => window.open("http://www.google.com/maps/place/" + split[4]);
+                    }
+
+                } else
+                    result.innerHTML = "not found";
+
+            } else if (xhr.readyState == 4 && xhr.status == 404) {
+                result.innerHTML = "not found";
 
             } else if (xhr.readyState == 4 && xhr.status == 0) //disconnected
                 this.ConfirmBox("Server is unavailable.", true);
         };
-        xhr.open("GET", "locateip&" + ipaddr, true);
+
+        xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        xhr.open("GET", "bin/ip/" + ipBytes[0] + ".bin", true);
         xhr.send();
     }
+
+    BytesToInt(array) {
+        var value = 0;
+        for (var i = array.length - 1; i >= 0; i--)
+            value = Number(value * 256) + Number(array[i]);
+        return value;
+    };
 
     Remove(ipaddr) {
         if (!this.hashtable.hasOwnProperty(ipaddr)) return;
