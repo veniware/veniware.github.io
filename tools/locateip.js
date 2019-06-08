@@ -169,14 +169,14 @@ class LocateIp extends Window {
                         0 & 0xff,
                         bytes.charCodeAt(index) & 0xff,
                         bytes.charCodeAt(index + 1) & 0xff,
-                        ipBytes[3] & 0xff
+                        ipBytes[0] & 0xff
                     ]);
 
                     to = this.BytesToInt([
                         255 & 0xff,
                         bytes.charCodeAt(index + 2) & 0xff,
                         bytes.charCodeAt(index + 3) & 0xff,
-                        ipBytes[3] & 0xff
+                        ipBytes[0] & 0xff
                     ]);
 
                     if (target >= from && target <= to) break;
@@ -190,14 +190,10 @@ class LocateIp extends Window {
 
                     for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 6 + i) & 0xff;
                     let ptr1 = this.BytesToInt(p);
-
                     for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 10 + i) & 0xff;
                     let ptr2 = this.BytesToInt(p);
-
                     for (let i = 0; i < 4; i++) p[i] = bytes.charCodeAt(index + 14 + i) & 0xff;
                     let ptr3 = this.BytesToInt(p);
-
-                    console.log(namesBegin, ptr1, ptr2, ptr3);
 
                     let s1 = "";
                     for (let i = 0; i < 256; i++) {
@@ -225,7 +221,7 @@ class LocateIp extends Window {
                     divFlag.style.height = "18px";
                     divFlag.style.margin = "8px 8px 0 0";
                     divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svg)";
-                    divFlag.style.animation = "fade-in .2s";
+                    divFlag.style.animation = "fade-in .4s";
                     result.appendChild(divFlag);
 
                     result.innerHTML += s1 + ", " + s2 + ", " + s3;
