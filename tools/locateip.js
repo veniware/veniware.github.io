@@ -5,7 +5,7 @@ class LocateIp extends Window {
         this.hashtable = {}; //contains all elements
 
         this.setTitle("Locate IP");
-        this.setIcon("res/locate.svgz");
+        this.setIcon("ico/locate.svgz");
 
         this.list = document.createElement("div");
         this.list.style.position = "absolute";
