@@ -11,9 +11,9 @@
 
 .input-box-floatting {
     box-sizing: border-box;
-    left: 50px !important;
-    width: calc(100% - 100px) !important;
-    bottom: 50px !important;
+    left: 40px !important;
+    width: calc(100% - 80px) !important;
+    bottom: 40px !important;
     margin: 0 !important;
     box-shadow: rgba(16,16,16,.5) 0 4px 8px;
 }

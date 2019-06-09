@@ -51,8 +51,10 @@ function openBooger() {
     sidemenu.style.visibility = "visible";
 
     setTimeout(() => {
+        if (!isBoogerOpen) return;
         container.style.filter = "blur(3px)";
         bottombar.style.filter = "blur(2px)";
+        txtSearch.focus();
     }, 100);
 }
 
@@ -98,3 +100,4 @@ function showCategory(key) {
 }
 
 showCategory("");
+openBooger();
