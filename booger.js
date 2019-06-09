@@ -56,7 +56,7 @@ function openBooger() {
         container.style.filter = "blur(3px)";
         bottombar.style.filter = "blur(2px)";
         txtSearch.focus();
-    }, 100);
+    }, 200);
 }
 
 function closeBooger() {
@@ -86,6 +86,8 @@ function showCategory(key) {
         if ($menu[i].key.includes(key) || true) {
             let newIcon = document.createElement("div");
             newIcon.setAttribute("tabindex", "0");
+            newIcon.setAttribute("role", "button");
+            newIcon.setAttribute("aria-label", $menu[i].name);
             newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
             grid.appendChild(newIcon);
 
