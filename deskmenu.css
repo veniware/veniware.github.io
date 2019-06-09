@@ -74,7 +74,7 @@
     margin-top: 40px;
     padding: 6px 8px;
     background-color: rgb(208,208,208);
-    width: 400px;
+    width: 350px;
     max-width: 80%;
     text-align: center;
     font-size: 20px;
@@ -113,7 +113,7 @@
     font-weight: 600;
     font-size: 14px;
     display: inline-block;
-    padding: 4px;
+    padding: 8px;
     margin: 4px;
     border-radius: 4px;
     outline: none;
@@ -131,7 +131,7 @@
 }
 
 #grid > div:focus {
-    box-shadow: rgb(32,32,32) 0 0 0 3px inset;
+    box-shadow: rgb(32,32,32) 0 0 0 4px inset;
 }
 
 #grid > div > div:nth-child(1) { /*icon*/

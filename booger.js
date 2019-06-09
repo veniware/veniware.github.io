@@ -77,7 +77,6 @@ txtSearch.oninput = () => {
 };
 
 
-
 function showCategory(key) {
     grid.innerHTML = "";
 
