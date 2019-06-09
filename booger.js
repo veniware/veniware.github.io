@@ -89,8 +89,8 @@ function showCategory(key) {
             newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
             grid.appendChild(newIcon);
 
-            let ico = document.createElement("img");
-            ico.src = $menu[i].ico;
+            let ico = document.createElement("div");
+            ico.style.backgroundImage = "url(" + $menu[i].ico + ")";
             newIcon.appendChild(ico);
 
             let name = document.createElement("div");

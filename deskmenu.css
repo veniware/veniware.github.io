@@ -128,16 +128,20 @@
     filter: invert(1);
 }
 
-#grid > div > img { /*icon*/
-    width: 72px;
+#grid > div > div:nth-child(1) { /*icon*/
+    width: 128px;
     height: 72px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
 }
 
-#grid > div > div { /*name*/
+#grid > div > div:nth-child(2)   { /*name*/
     width: 128px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 4px 0;
 }
 
 #icoTools {
