@@ -12,7 +12,7 @@
 body {
     font-size: var(--global-font-size);
     font-family: var(--global-font-family);
-    background-color: #F5F5F5;
+    background-color: #DDD;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;

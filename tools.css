@@ -10,12 +10,12 @@
 }
 
 .input-box-floatting {
-    box-sizing: border-box !important;
+    box-sizing: border-box;
     left: 50px !important;
     width: calc(100% - 100px) !important;
     bottom: 50px !important;
     margin: 0 !important;
-    box-shadow: rgba(16,16,16,.5) 0 4px 8px !important;
+    box-shadow: rgba(16,16,16,.5) 0 4px 8px;
 }
 
 .list-element {

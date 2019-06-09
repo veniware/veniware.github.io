@@ -1,4 +1,11 @@
-let booger = document.getElementById("booger");
+let isBoogerOpen = false;
+
+let $menu = [
+    { name: "Password generator", ico: "ico/passgen.svgz", f: () => new Passgen(), key: ["tools", "js"] },
+    { name: "Network calculator", ico: "ico/netcalc.svgz", f: () => new Netcalc(), key: ["tools", "js"] },
+    { name: "MAC lookup", ico: "ico/maclookup.svgz", f: () => new MacLookup(), key: ["tools", "js"] },
+    { name: "Locate IP", ico: "ico/locate.svgz", f: () => new LocateIp(), key: ["tools", "js"] }
+];
 
 document.body.addEventListener("mousemove", event => {      
     if (onMobile) return;
@@ -31,6 +38,60 @@ document.body.onmouseleave = () => {
     booger.style.height = "48px";
 };
 
-booger.onclick = ()=> {
+booger.onclick = ()=> { openBooger(); };
+sidemenu.onclick = () => { closeBooger(); };
 
+function openBooger() {
+    if (isBoogerOpen) return;
+    isBoogerOpen = true;
+
+    booger.style.visibility = "hidden";
+    booger.style.opacity = "0";
+    container.style.filter = "blur(3px)";
+    bottombar.style.filter = "blur(2px)";
+    sidemenu.style.transform = "none";
+    sidemenu.style.visibility = "visible";
+}
+
+function closeBooger() {
+    if (!isBoogerOpen) return;
+    isBoogerOpen = false;
+
+    booger.style.visibility = "visible";
+    booger.style.opacity = "1";
+    container.style.filter = "none";
+    bottombar.style.filter = "none";
+    sidemenu.style.transform = "translate(-100%)";
+    sidemenu.style.visibility = "hidden";
+}
+
+txtSearch.oninput = () => {
+    txtSearch.style.backgroundPositionX = (txtSearch.value.length > 0) ? "-40px" : "4px";
 };
+
+
+
+function showCategory(key) {
+    grid.innerHTML = "";
+
+    let count = 0;
+
+    for (let i = 0; i < $menu.length; i++)
+        if ($menu[i].key.includes(key) || true) {
+            let newIcon = document.createElement("div");
+            newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
+            grid.appendChild(newIcon);
+
+            let ico = document.createElement("img");
+            ico.src = $menu[i].ico;
+            newIcon.appendChild(ico);
+
+            let name = document.createElement("div");
+            name.innerHTML = $menu[i].name;
+            newIcon.appendChild(name);
+
+            newIcon.onclick = () => { $menu[i].f(); };
+        }
+}
+
+showCategory("");
