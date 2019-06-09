@@ -1,10 +1,10 @@
 let isBoogerOpen = false;
 
 let $menu = [
-    { name: "Password generator", ico: "ico/passgen.svgz", f: () => new Passgen(), key: ["tools", "js"] },
-    { name: "Network calculator", ico: "ico/netcalc.svgz", f: () => new Netcalc(), key: ["tools", "js"] },
-    { name: "MAC lookup", ico: "ico/maclookup.svgz", f: () => new MacLookup(), key: ["tools", "js"] },
-    { name: "Locate IP", ico: "ico/locate.svgz", f: () => new LocateIp(), key: ["tools", "js"] }
+    { name: "Password generator", ico: "ico/passgen.svgz",   f: () => new Passgen(),   key: ["tools", "js"] },
+    { name: "Network calculator", ico: "ico/netcalc.svgz",   f: () => new Netcalc(),   key: ["tools", "js"] },
+    { name: "MAC lookup",         ico: "ico/maclookup.svgz", f: () => new MacLookup(), key: ["tools", "js"] },
+    { name: "Locate IP",          ico: "ico/locate.svgz",    f: () => new LocateIp(),  key: ["tools", "js"] }
 ];
 
 document.body.addEventListener("mousemove", event => {      
@@ -47,6 +47,7 @@ function openBooger() {
 
     booger.style.visibility = "hidden";
     booger.style.opacity = "0";
+    backcolor.style.transform = "none";
     sidemenu.style.transform = "none";
     sidemenu.style.visibility = "visible";
 
@@ -66,6 +67,7 @@ function closeBooger() {
     booger.style.opacity = "1";
     container.style.filter = "none";
     bottombar.style.filter = "none";
+    backcolor.style.transform = "translate(-100%)";
     sidemenu.style.transform = "translate(-100%)";
     sidemenu.style.visibility = "hidden";
 }
