@@ -86,6 +86,7 @@ function showCategory(key) {
     for (let i = 0; i < $menu.length; i++)
         if ($menu[i].key.includes(key) || true) {
             let newIcon = document.createElement("div");
+            newIcon.setAttribute("tabindex", "0");
             newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
             grid.appendChild(newIcon);
 
@@ -97,7 +98,16 @@ function showCategory(key) {
             name.innerHTML = $menu[i].name;
             newIcon.appendChild(name);
 
-            newIcon.onclick = () => { $menu[i].f(); };
+            newIcon.onclick = event => {
+                $menu[i].f();                
+            };
+            
+            newIcon.onkeypress = event => {
+                if (event.code == "Enter" || event.code == "NumpadEnter" || event.code == "Space") {
+                    $menu[i].f();
+                    if (!event.ctrlKey) closeBooger();
+                }
+            };
         }
 }
 

@@ -116,6 +116,8 @@
     padding: 4px;
     margin: 4px;
     border-radius: 4px;
+    outline: none;
+
     transition: .1s;
 }
 
@@ -126,6 +128,10 @@
 #grid > div:active {
     transition-delay: .2s;
     filter: invert(1);
+}
+
+#grid > div:focus {
+    box-shadow: rgb(32,32,32) 0 0 0 3px inset;
 }
 
 #grid > div > div:nth-child(1) { /*icon*/
