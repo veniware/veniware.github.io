@@ -47,10 +47,13 @@ function openBooger() {
 
     booger.style.visibility = "hidden";
     booger.style.opacity = "0";
-    container.style.filter = "blur(3px)";
-    bottombar.style.filter = "blur(2px)";
     sidemenu.style.transform = "none";
     sidemenu.style.visibility = "visible";
+
+    setTimeout(() => {
+        container.style.filter = "blur(3px)";
+        bottombar.style.filter = "blur(2px)";
+    }, 100);
 }
 
 function closeBooger() {

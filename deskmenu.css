@@ -53,7 +53,7 @@
 
     background-color: rgba(192,192,192,.8);
     transform: translate(-100%);
-    transition: .1s;
+    transition: .12s;
 
     /*background-color: var(--theme-color);*/
     /*mix-blend-mode: multiply;*/
