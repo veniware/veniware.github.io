@@ -26,12 +26,12 @@ class LocateIp extends Window {
 
         this.txtInput = document.createElement("input");
         this.txtInput.type = "text";
-        this.txtInput.placeholder = "hostname or ip";
-        this.txtInput.className = "input-box-dark";
         this.txtInput.style.position = "absolute";
         this.txtInput.style.left = "0";
         this.txtInput.style.width = "100%";
         this.txtInput.style.bottom = "0px";
+        this.txtInput.className = "input-box-floatting";
+        this.txtInput.placeholder = "ip";
         this.content.appendChild(this.txtInput);
 
         this.lblTitle.style.left = TOOLBAR_GAP + this.toolbox.childNodes.length * 22 + "px";
@@ -104,6 +104,8 @@ class LocateIp extends Window {
             this.list.appendChild(this.hashtable[ipaddr].element);
             return;
         }
+
+        this.txtInput.className = "input-box-dark";
 
         let element = document.createElement("div");
         element.className = "list-element collapsible-box";

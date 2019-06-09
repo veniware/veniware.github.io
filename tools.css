@@ -9,6 +9,16 @@
     padding: 4px;
 }
 
+.input-box-floatting {
+    position: absolute;
+    box-sizing: border-box;
+    left: 50px;
+    width: calc(100% - 100px);
+    bottom: 50px;
+    margin: 0;
+    box-shadow: rgba(16,16,16,.5) 0 4px 8px;
+}
+
 .list-element {
     font-weight: 500;
     position: relative;

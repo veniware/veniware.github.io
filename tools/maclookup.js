@@ -30,7 +30,7 @@ class MacLookup extends Window {
         this.txtInput.style.left = "0";
         this.txtInput.style.width = "100%";
         this.txtInput.style.bottom = "0px";
-        this.txtInput.className = "input-box-dark";
+        this.txtInput.className = "input-box-floatting";
         this.txtInput.placeholder = "mac address";
         this.content.appendChild(this.txtInput);
 
@@ -83,6 +83,8 @@ class MacLookup extends Window {
             this.list.appendChild(this.hashtable[macaddr].element);
             return;
         }
+
+        this.txtInput.className = "input-box-dark";
 
         let element = document.createElement("div");
         element.className = "list-element collapsible-box";
