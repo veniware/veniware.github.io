@@ -4,8 +4,8 @@ document.body.addEventListener("mousemove", event => {
     if (onMobile) return;
 
     let y = 0;
-    if (event.x < 200) y = event.y - 32;
-    if (event.x > 150) y *= (300 - event.x) / 150;
+    if (event.x < 128) y = event.y - 32;
+    if (event.x > 96) y *= (192 - event.x) / 96;
        
     if (y < 8) {
         y = 0;

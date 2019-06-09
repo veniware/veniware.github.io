@@ -216,15 +216,20 @@ class LocateIp extends Window {
                         s3 += String.fromCharCode(b);
                     }
 
-                    let divFlag = document.createElement("div");
-                    divFlag.style.width = "24px";
-                    divFlag.style.height = "18px";
-                    divFlag.style.margin = "8px 8px 0 0";
-                    divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svg)";
-                    divFlag.style.animation = "fade-in .4s";
-                    result.appendChild(divFlag);
+                    if (fl != "--") {
+                        let divFlag = document.createElement("div");
+                        divFlag.style.width = "24px";
+                        divFlag.style.height = "18px";
+                        divFlag.style.margin = "8px 8px 0 0";
+                        divFlag.style.backgroundImage = "url(/flags/" + fl.toLocaleLowerCase() + ".svg)";
+                        divFlag.style.animation = "fade-in .4s";
+                        result.appendChild(divFlag);
+                    }
 
-                    result.innerHTML += s1 + ", " + s2 + ", " + s3;
+                    if (s2 == "--" && s3 == "--")
+                        result.innerHTML += s1;
+                    else
+                        result.innerHTML += s1 + ", " + s2 + ", " + s3;
 
                     let lon = 0;
                     let lat = 0;
