@@ -52,7 +52,7 @@
     z-index: 3;
 
     transform: translate(-100%);
-    transition: .12s;
+    transition: .25s;
 }
 
 #backcolor {
@@ -67,7 +67,7 @@
     background-color: var(--theme-color);
     mix-blend-mode: multiply;
 
-    transition: .12s;
+    transition: .2s;
 }
 
 #txtSearch {
