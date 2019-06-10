@@ -32,16 +32,9 @@
 
     transform-origin: 0 50%;
 
-    transition: all .2s;    
+    transition: border-radius .2s, height .2s;
     transition-timing-function: cubic-bezier(0,1.5,1,1);
 }
-
-@supports (-ms-ime-align:auto) {
-    #booger {
-        transition: border-radius .2s, height .2s;
-    }
-}
-
 
 #sidemenu {
     position: fixed;
@@ -129,7 +122,7 @@
     background-color: var(--theme-color);
 }
 
-#grid > div:hover > div:nth-child(1){
+#grid > div:hover > div:nth-child(1) {
     transform: scale(1.1);
     transition: .2s;
 }
@@ -142,7 +135,7 @@
     background-position: center;
 }
 
-#grid > div > div:nth-child(2)   { /*name*/
+#grid > div > div:nth-child(2) { /*name*/
     width: 128px;
     white-space: nowrap;
     overflow: hidden;

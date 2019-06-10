@@ -53,7 +53,7 @@ function openBooger() {
 
     setTimeout(() => {
         if (!isBoogerOpen) return;
-        container.style.filter = "blur(3px)";
+        container.style.filter = "blur(4px)";
         bottombar.style.filter = "blur(2px)";
         txtSearch.focus();
     }, 200);
