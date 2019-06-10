@@ -129,7 +129,7 @@ class Window {
                 $w.isMoving = true;
 
                 if (w_dblclickCheck) {
-                    this.Toogle();
+                    if (!onMobile) this.Toogle();
                     w_dblclickCheck = false;
                     return;
                 }
