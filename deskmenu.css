@@ -121,8 +121,9 @@
     transition: .1s;
 }
 
-#grid > div:hover {
-    transform: scale(1.05);
+#grid > div:hover > div:nth-child(1){
+    transform: scale(1.1);
+    transition: .2s;
 }
 
 #grid > div:active {
