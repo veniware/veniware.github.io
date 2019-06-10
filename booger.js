@@ -56,7 +56,7 @@ function openBooger() {
         container.style.filter = "blur(3px)";
         bottombar.style.filter = "blur(2px)";
         txtSearch.focus();
-    }, 150);
+    }, 200);
 }
 
 function closeBooger() {
