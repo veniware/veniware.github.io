@@ -64,8 +64,8 @@
     z-index: 2;
 
     /*transform: translate(-100%);*/
-    background-color: var(--theme-color);
-    mix-blend-mode: multiply;
+    background-color: #202020;
+    mix-blend-mode: overlay;
 
     transition: .2s;
 }
@@ -121,18 +121,17 @@
     transition: .1s;
 }
 
-#grid > div:hover > div:nth-child(1){
-    transform: scale(1.1);
-    transition: .2s;
-}
-
-#grid > div:active {
-    transition-delay: .2s;
-    filter: invert(1);
+#grid > div:hover {
+    background-color: var(--theme-color);
 }
 
 #grid > div:focus {
-    box-shadow: rgb(32,32,32) 0 0 0 4px inset;
+    background-color: var(--theme-color);
+}
+
+#grid > div:hover > div:nth-child(1){
+    transform: scale(1.1);
+    transition: .2s;
 }
 
 #grid > div > div:nth-child(1) { /*icon*/
