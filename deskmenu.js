@@ -2,14 +2,13 @@ const MONTHS_NAMES = ["January", "February", "March", "April", "May", "June", "J
 const DAYS_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 (()=> { //init clock
-    let svg_analog = document.getElementById("analog_clock");
     for (let i = 0; i < 12; i++) {
         let newDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         newDot.setAttribute("r", i % 3 == 0 ? 2.5 : 1.5);
         newDot.setAttribute("cx", 48 + Math.sin(i * 30 / 57.29577951) * 36);
         newDot.setAttribute("cy", 48 - Math.cos(i * 30 / 57.29577951) * 36);
         newDot.setAttribute("fill", "#202020");
-        svg_analog.appendChild(newDot);
+        analog_clock.appendChild(newDot);
     }
 })();
 

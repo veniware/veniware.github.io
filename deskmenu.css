@@ -57,7 +57,7 @@
     z-index: 2;
 
     /*transform: translate(-100%);*/
-    background-color: #202020;
+    background-color: #a0a0a0;
     mix-blend-mode: overlay;
 
     transition: .2s;
@@ -102,6 +102,7 @@
 
 #grid > div {
     background-color: rgb(224,224,224);
+    box-shadow: rgb(160,160,160) 0 0px 4px;
     text-align: center;
     font-weight: 600;
     font-size: 14px;
@@ -114,12 +115,10 @@
     transition: .1s;
 }
 
+#grid > div:focus,
 #grid > div:hover {
     background-color: var(--theme-color);
-}
-
-#grid > div:focus {
-    background-color: var(--theme-color);
+    box-shadow: var(--theme-color) 0 0px 4px;
 }
 
 #grid > div:hover > div:nth-child(1) {
@@ -142,32 +141,3 @@
     text-overflow: ellipsis;
     padding: 4px 0;
 }
-
-#icoTools {
-    padding-right: 8px;
-}
-
-#icoTools > div > .front {
-    -webkit-mask-image: url(res/toolbox_mask.svgz);
-    mask-image: url(res/toolbox_mask.svgz);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 96px 96px;
-    mask-size: 96px 96px;
-}
-
-#icoTools > div > .front {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-#icoTools > div > svg > image { transition: .4s; }
-
-#icoTools > div > svg > image:nth-child(1) { transform: translate(-10px, 38px) rotate(-50deg) }
-#icoTools > div > svg > image:nth-child(2) { transform: translate(36px, 28px) rotate(-15deg) }
-#icoTools > div > svg > image:nth-child(3) { transform: translate(22px, 30px) rotate(-15deg) }
-
-#icoTools:hover > div > svg > image:nth-child(1) { transform: translate(-10px, 32px) rotate(-56deg) }
-#icoTools:hover > div > svg > image:nth-child(2) { transform: translate(38px, 18px) rotate(-20deg) }
-#icoTools:hover > div > svg > image:nth-child(3) { transform: translate(20px, 20px) rotate(-25deg) }
