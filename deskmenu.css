@@ -58,7 +58,7 @@
 
     /*transform: translate(-100%);*/
     background-color: #a0a0a0;
-    mix-blend-mode: overlay;
+    mix-blend-mode: multiply;
 
     transition: .2s;
 }
