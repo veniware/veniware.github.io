@@ -7,7 +7,7 @@ let $menu = [
     { name: "Locate IP",          ico: "ico/locate.svgz",    f: () => new LocateIp(),  key: ["tools", "js"] }
 ];
 
-document.body.addEventListener("mousemove", event => {      
+document.body.addEventListener("mousemove", event => {
     if (onMobile) return;
 
     let y = 0;
@@ -39,7 +39,6 @@ document.body.onmouseleave = () => {
 };
 
 booger.onclick = ()=> { openBooger(); };
-sidemenu.onclick = () => { closeBooger(); };
 
 function openBooger() {
     if (isBoogerOpen) return;
@@ -99,8 +98,9 @@ function showCategory(key) {
             name.innerHTML = $menu[i].name;
             newIcon.appendChild(name);
 
-            newIcon.onclick = event => {
-                $menu[i].f();                
+            newIcon.onmousedown = event => {
+                if (event.button == 0 || event.button == 1) $menu[i].f();
+                if (event.button == 0) closeBooger();                
             };
             
             newIcon.onkeypress = event => {
