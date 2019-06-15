@@ -100,7 +100,8 @@ function showCategory(key) {
 
             newIcon.onmousedown = event => {
                 if (event.button == 0 || event.button == 1) $menu[i].f();
-                if (event.button == 0) closeBooger();                
+                if (event.button == 0) closeBooger();
+                event.preventDefault();
             };
             
             newIcon.onkeypress = event => {
@@ -111,6 +112,10 @@ function showCategory(key) {
             };
         }
 }
+
+close_box.onclick = () => {
+    closeBooger();
+};
 
 showCategory("");
 openBooger();
