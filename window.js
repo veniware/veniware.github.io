@@ -509,7 +509,7 @@ function body_resize(event) {
 function win_mousemove(event) {
     if ($w.active === null) return;
 
-    if (event.buttons != 1 && !isIE) win_mouseup(event);
+    if (event.buttons != 1) win_mouseup(event);
 
     document.getSelection().removeAllRanges(); //remove all selections
 

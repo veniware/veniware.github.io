@@ -28,7 +28,7 @@
     background-color: var(--booger-bg);
     border-radius: 4px 8px 48px 8px;
     box-shadow: rgba(0,0,0,.2) 2px 2px 2px;
-    z-index: 5;
+    z-index: 9999999999;
 
     transform-origin: 0 50%;
 
@@ -145,7 +145,7 @@
 #close_box {
     position: absolute;
     right: 8px;
-    top: 36px;
+    top: 38px;
     width: 40px;
     height: 40px;
     cursor: pointer;
