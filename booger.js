@@ -76,7 +76,7 @@ txtSearch.oninput = () => {
 };
 
 
-function showCategory(key) {
+function showCategory(key, noAnimation = false) {
     grid.innerHTML = "";
 
     let count = 0;
@@ -87,7 +87,7 @@ function showCategory(key) {
             newIcon.setAttribute("tabindex", "0");
             newIcon.setAttribute("role", "button");
             newIcon.setAttribute("aria-label", $menu[i].name);
-            newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
+            if (noAnimation) newIcon.style.animation = "task-icon-open " + ++count * .1 + "s ease-in 1";
             grid.appendChild(newIcon);
 
             let ico = document.createElement("div");
@@ -98,7 +98,7 @@ function showCategory(key) {
             name.innerHTML = $menu[i].name;
             newIcon.appendChild(name);
 
-            newIcon.onmousedown = event => {
+            newIcon.onmouseup = event => {
                 if (event.button == 0 || event.button == 1) $menu[i].f();
                 if (event.button == 0) closeBooger();
                 event.preventDefault();

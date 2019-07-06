@@ -30,6 +30,8 @@
     box-shadow: rgba(0,0,0,.2) 2px 2px 2px;
     z-index: 9999999999;
 
+    opacity: 0;
+
     transform-origin: 0 50%;
 
     transition: border-radius .2s, height .2s, opacity .4s;
