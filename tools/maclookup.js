@@ -144,8 +144,8 @@ class MacLookup extends Window {
                 let pivot, current;
 
                 do { //binary search
-                    pivot = ((low + high) / 2);
-                    pivot = pivot - (pivot % 7) + 4;
+                    pivot = (low + high) / 2;
+                    pivot = pivot - pivot % 7 + 4;
 
                     current = this.BytesToInt([
                         bytes.charCodeAt(pivot + 2) & 0xff,
@@ -155,7 +155,7 @@ class MacLookup extends Window {
 
                     if (target < current) high = pivot;
                     if (target > current) low = pivot;
-                } while (current != target && high - low > 7);
+                } while (current != target && high - low >= 7);
 
                 if (target == current) { //found
                     let manufacturer = "";
