@@ -153,9 +153,11 @@ class MacLookup extends Window {
                         bytes.charCodeAt(pivot) & 0xff
                     ]);
 
+                    if (current == target) break; //found
+
                     if (target < current) high = pivot;
                     if (target > current) low = pivot;
-                } while (current != target && high - low > 7);
+                } while (high - low >= 7);
 
                 if (target == current) { //found
                     let manufacturer = "";
