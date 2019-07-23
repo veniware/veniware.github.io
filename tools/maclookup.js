@@ -155,7 +155,7 @@ class MacLookup extends Window {
 
                     if (target < current) high = pivot;
                     if (target > current) low = pivot;
-                } while (current != target && high - low >= 7);
+                } while (current != target && high - low > 7);
 
                 if (target == current) { //found
                     let manufacturer = "";
