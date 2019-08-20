@@ -64,21 +64,46 @@
     <script src="booger.js"></script>
     <script src="ctr_ipbox.js"></script>
 
-    <script async defer src="tools/passgen.js"></script>
-    <script async defer src="tools/netcalc.js"></script>
-    <script async defer src="tools/maclookup.js"></script>
-    <script async defer src="tools/locateip.js"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {            
+
+            let scriptsToDo = [
+                "tools/passgen.js",
+                "tools/netcalc.js",
+                "tools/maclookup.js",
+                "tools/locateip.js"
+            ];
+
+            const loadScript = name => {
+                return new Promise((resolve, reject) => {
+                    if (document.head.querySelectorAll("script[src$='" + name + "']").length == 0) {
+                        let script = document.createElement("script");
+                        script.onload  = ()=> { resolve(script); };
+                        script.onerror = ()=> { reject(script); };
+                        script.src = name;
+                        script.setAttribute("async", true);
+                        script.setAttribute("defer", true);
+                        document.body.appendChild(script);
+                    } else 
+                        reject();                
+                });
+            };
+
+            let scriptsPromises = [];
+            for (let i = 0; i < scriptsToDo.length; i++)
+                scriptsPromises.push(loadScript(scriptsToDo[i]));
+
             fragment = window.location.href.substring(window.location.href.indexOf("#") + 1, window.location.href.length);
 
-            switch (fragment) {
-                case "passgen": new Passgen(); break;
-                case "netcalc": new Netcalc(); break;
-                case "maclookup": new MacLookup(); break;
-                case "locateip": new LocateIp(); break;
-            }
+            Promise.all(scriptsPromises).then(() => {
+                switch (fragment) {
+                    case "passgen": new Passgen(); break;
+                    case "netcalc": new Netcalc(); break;
+                    case "maclookup": new MacLookup(); break;
+                    case "locateip": new LocateIp(); break;
+                }
+            });
+
         });
     </script>
 
