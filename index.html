@@ -97,10 +97,10 @@
 
             Promise.all(scriptsPromises).then(() => {
                 switch (fragment) {
-                    case "passgen": new Passgen(); break;
-                    case "netcalc": new Netcalc(); break;
+                    case "passgen":   new Passgen(); break;
+                    case "netcalc":   new Netcalc(); break;
                     case "maclookup": new MacLookup(); break;
-                    case "locateip": new LocateIp(); break;
+                    case "locateip":  new LocateIp(); break;
                 }
             });
 

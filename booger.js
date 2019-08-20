@@ -118,4 +118,4 @@ close_box.onclick = () => {
 };
 
 showCategory("");
-openBooger();
+//openBooger();
