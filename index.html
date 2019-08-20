@@ -68,5 +68,19 @@
     <script async defer src="tools/netcalc.js"></script>
     <script async defer src="tools/maclookup.js"></script>
     <script async defer src="tools/locateip.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {            
+            fragment = window.location.href.substring(window.location.href.indexOf("#") + 1, window.location.href.length);
+
+            switch (fragment) {
+                case "passgen": new Passgen(); break;
+                case "netcalc": new Netcalc(); break;
+                case "maclookup": new MacLookup(); break;
+                case "locateip": new LocateIp(); break;
+            }
+        });
+    </script>
+
 </body>
 </html>
