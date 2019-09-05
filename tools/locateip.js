@@ -43,6 +43,8 @@ class LocateIp extends Window {
         powered.style.color = "gray";
         this.content.appendChild(powered);
 
+        this.txtInput.style.zIndex = "3";
+
         this.lblTitle.style.left = TOOLBAR_GAP + this.toolbox.childNodes.length * 22 + "px";
 
         this.txtInput.onkeydown = (event) => {

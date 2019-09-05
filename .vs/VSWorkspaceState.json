@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\bin",
+    "\\tools"
   ],
-  "SelectedNode": "\\button.css",
+  "SelectedNode": "\\index.html",
   "PreviewInSolutionExplorer": false
 }
