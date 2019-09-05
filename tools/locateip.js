@@ -34,6 +34,15 @@ class LocateIp extends Window {
         this.txtInput.placeholder = "ip";
         this.content.appendChild(this.txtInput);
 
+        let powered = document.createElement("div");
+        powered.innerHTML = "powered by ip2location.com";
+        powered.style.position = "absolute";
+        powered.style.right = "16px";
+        powered.style.bottom = "8px";
+        powered.style.fontSize = "12px";
+        powered.style.color = "gray";
+        this.content.appendChild(powered);
+
         this.lblTitle.style.left = TOOLBAR_GAP + this.toolbox.childNodes.length * 22 + "px";
 
         this.txtInput.onkeydown = (event) => {
