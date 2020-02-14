@@ -22,8 +22,20 @@ const DAYS_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
     analog_clock_h.style.transform = "rotate(" + h * 30 + "deg)";
 
     date_month.innerHTML = MONTHS_NAMES[now.getMonth()];
-    date_date.innerHTML = now.getDate();
+    //date_date.innerHTML = now.getDate();
     date_day.innerHTML = DAYS_NAMES[now.getDay()];
+    
+    if (now.getMonth() === 0 && now.getDate() === 1) { //new year
+        date_date.innerHTML = "&#129346;";
+    } else if (now.getMonth() === 1 && now.getDate() === 14) { //valentines day
+        date_date.innerHTML = "&#10084;";        
+    } else if (now.getMonth() === 2 && now.getDate() === 14) { //PI day
+        date_date.innerHTML = "&#120645;";
+    } else if (now.getMonth() === 6 && now.getDate() === 31) { //sys admin day
+        date_date.innerHTML = "&#128374;";
+    } else {
+        date_date.innerHTML = now.getDate();
+    }
 
     setTimeout(() => updateClock(), 60000);
 })();
