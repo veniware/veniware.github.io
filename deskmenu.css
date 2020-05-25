@@ -1,4 +1,5 @@
 #analog_clock {
+    filter: drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px);
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
@@ -12,6 +13,7 @@
 }
 
 #date_calendar {
+    filter: drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px);
 	position: absolute;
 	right: 128px;
 	bottom: 16px;
@@ -32,8 +34,27 @@
 
     transform-origin: 0 50%;
 
-    transition: border-radius .2s, height .2s, opacity .4s, transform .05s;
+    transition:
+        filter .4s,
+        border-radius .4s,
+        height .2s,
+        transform .00001s;
+
     transition-timing-function: cubic-bezier(0,1.5,1,1);
+}
+
+#booger > #imgSearch {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 32px;
+    height: 32px;
+    transform-origin: 0 0;
+
+    background-image: url(ico/search.svgz);
+    background-size: cover;
+
+    transition: .2s;
 }
 
 #sidemenu {

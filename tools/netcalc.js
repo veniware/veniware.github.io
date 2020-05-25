@@ -8,39 +8,39 @@ class Netcalc extends Window {
         this.content.style.overflow = "auto";
         this.content.style.padding = "16px";
         this.content.style.display = "grid";
-        this.content.style.gridTemplateColumns = "192px 72px 192px 96px";
-        this.content.style.gridTemplateRows = "repeat(10, 32px)";
+        this.content.style.gridTemplateColumns = "auto 192px 72px 192px 96px auto";
+        this.content.style.gridTemplateRows = "repeat(12, 32px)";
         this.content.style.alignItems = "end";
-        
+
         let lblAddress = document.createElement("div");
         lblAddress.innerHTML = "IP address:";
-        lblAddress.style.gridColumn = "1";
+        lblAddress.style.gridColumn = "2";
         lblAddress.style.gridRow = "1";
         this.content.appendChild(lblAddress);
 
         let divAddress = document.createElement("div");
-        divAddress.style.gridColumn = "1";
+        divAddress.style.gridColumn = "2";
         divAddress.style.gridRow = "2";
-        this.content.appendChild(divAddress);       
+        this.content.appendChild(divAddress);
         this.ipAddress = new IpBox();
         this.ipAddress.SetIp(192, 168, 0, 0);
         this.ipAddress.Attach(divAddress);
 
         this.lblClass = document.createElement("div");
         this.lblClass.innerHTML = "Class C";
-        this.lblClass.style.gridColumn = "2";
+        this.lblClass.style.gridColumn = "3";
         this.lblClass.style.gridRow = "2";
         this.lblClass.style.padding = "10px 0px";
         this.content.appendChild(this.lblClass);
 
         let lblMask = document.createElement("div");
         lblMask.innerHTML = "Subnet mask:";
-        lblMask.style.gridColumn = "1";
+        lblMask.style.gridColumn = "2";
         lblMask.style.gridRow = "3";
         this.content.appendChild(lblMask);
 
         let divMask = document.createElement("div");
-        divMask.style.gridColumn = "1";
+        divMask.style.gridColumn = "2";
         divMask.style.gridRow = "4";
         this.content.appendChild(divMask);
         this.ipMask = new IpBox();
@@ -56,7 +56,7 @@ class Netcalc extends Window {
         let lblCIDR = document.createElement("div");
         lblCIDR.innerHTML = "CIDR:";
         lblCIDR.value = "24";
-        lblCIDR.style.gridColumn = "2";
+        lblCIDR.style.gridColumn = "3";
         lblCIDR.style.gridRow = "3";
         this.content.appendChild(lblCIDR);
 
@@ -67,7 +67,7 @@ class Netcalc extends Window {
         this.txtCIDR.value = "24";
         this.txtCIDR.style.width = "40px";
         this.txtCIDR.style.marginLeft = "0px";
-        this.txtCIDR.style.gridColumn = "2";
+        this.txtCIDR.style.gridColumn = "3";
         this.txtCIDR.style.gridRow = "4";
         this.content.appendChild(this.txtCIDR);
 
@@ -76,39 +76,57 @@ class Netcalc extends Window {
         this.rngCIDR.min = "4";
         this.rngCIDR.max = "30";
         this.rngCIDR.value = "24";
-        this.rngCIDR.style.gridColumn = "3";
+        this.rngCIDR.style.gridColumn = "4";
         this.rngCIDR.style.gridRow = "4";
         this.rngCIDR.style.margin = "10px 0";
         this.rngCIDR.style.marginLeft = "8px";
         this.content.appendChild(this.rngCIDR);
 
+
+        let lblWildcard = document.createElement("div");
+        lblWildcard.innerHTML = "Wildcard:";
+        lblWildcard.value = "24";
+        lblWildcard.style.gridColumn = "2";
+        lblWildcard.style.gridRow = "5";
+        this.content.appendChild(lblWildcard);
+
+        this.divWildcard = document.createElement("div");
+        this.divWildcard.innerHTML = "0.0.0.255";
+        this.divWildcard.style.gridArea = "6 / 2";
+        this.divWildcard.style.padding = "4px 8px";
+        this.divWildcard.style.border = "1px solid rgb(224,224,224)";
+        this.divWildcard.style.borderRadius = "4px";
+        this.divWildcard.style.textAlign = "center";
+        this.content.appendChild(this.divWildcard);
+
+
         this.divMap = document.createElement("div");
-        this.divMap.style.gridArea = "7 / 4 / 1 / 1";
+        this.divMap.style.gridArea = "9 / 5 / 1 / 2";
         this.divMap.style.padding = "8px";
         this.divMap.style.textAlign = "center";
         this.content.appendChild(this.divMap);
 
         this.lblSubnet = document.createElement("div");
         this.lblSubnet.innerHTML = "Subnet:<br>192.168.0.0";
-        this.lblSubnet.style.gridArea = "9 / 2 / 1 / 1";
+        this.lblSubnet.style.gridArea = "11 / 2 / 1 / 2";
         this.lblSubnet.style.textAlign = "center";
         this.content.appendChild(this.lblSubnet);
 
         this.lblBroadcast = document.createElement("div");
         this.lblBroadcast.innerHTML = "Broadcast:<br>192.168.0.255";
-        this.lblBroadcast.style.gridArea = "9 / 3 / 1 / auto";
+        this.lblBroadcast.style.gridArea = "11 / 4 / 1 / auto";
         this.lblBroadcast.style.textAlign = "center";
         this.content.appendChild(this.lblBroadcast);
 
         this.lblRange = document.createElement("div");
         this.lblRange.innerHTML = "Host range:<br>192.168.0.1 - 192.168.0.254";
-        this.lblRange.style.gridArea = "11 / 1 / 1 / 4";
+        this.lblRange.style.gridArea = "13 / 2 / 1 / 5";
         this.lblRange.style.textAlign = "center";
         this.content.appendChild(this.lblRange);
 
         this.lblTotal = document.createElement("div");
         this.lblTotal.innerHTML = "Hosts:<br>254";
-        this.lblTotal.style.gridArea = "11 / 4 / 1 / 4";
+        this.lblTotal.style.gridArea = "11 / 5 / 1 / 5";
         this.lblTotal.style.textAlign = "center";
         this.lblTotal.style.marginLeft = "8px";
         this.content.appendChild(this.lblTotal);
@@ -116,8 +134,7 @@ class Netcalc extends Window {
         this.divMap.style.border = this.lblSubnet.style.border = this.lblBroadcast.style.border = this.lblRange.style.border = this.lblTotal.style.border = "rgb(224,224,224) 1px solid";
         this.divMap.style.borderRadius = this.lblSubnet.style.borderRadius = this.lblBroadcast.style.borderRadius = this.lblRange.style.borderRadius = this.lblTotal.style.borderRadius = "4px";
 
-        this.lblSubnet.style.userSelect = this.lblBroadcast.style.userSelect = this.lblRange.style.userSelect = this.lblTotal.style.userSelect = "text";
-        this.lblSubnet.style.webkitUserSelect = this.lblBroadcast.style.webkitUserSelect = this.lblRange.style.webkitUserSelect = this.lblTotal.style.webkitUserSelect = "text";
+        this.divWildcard.style.userSelect = this.lblSubnet.style.userSelect = this.lblBroadcast.style.userSelect = this.lblRange.style.userSelect = this.lblTotal.style.userSelect = "text";
 
         this.txtCIDR.oninput = () => {
             this.rngCIDR.value = this.txtCIDR.value;
@@ -148,12 +165,12 @@ class Netcalc extends Window {
             for (let i = 0; i < octet; i++)
                 this.ipMask.textBoxes[i].value = 255;
 
-            for (let i = octet+1; i < 4; i++)
+            for (let i = octet + 1; i < 4; i++)
                 this.ipMask.textBoxes[i].value = 0;
 
             let v = 0;
             for (let i = 0; i < value; i++)
-                v += Math.pow(2, 7-i);
+                v += Math.pow(2, 7 - i);
             this.ipMask.textBoxes[octet].value = v;
 
             this.Calculate();
@@ -184,9 +201,9 @@ class Netcalc extends Window {
         this.ipMask.textBoxes[2].onkeyup = this.ipMask.textBoxes[2].oninput =
         this.ipMask.textBoxes[3].onkeyup = this.ipMask.textBoxes[3].oninput = () => {
             let bits = parseInt(this.ipMask.textBoxes[0].value).toString(2) +
-                       parseInt(this.ipMask.textBoxes[1].value).toString(2) +
-                       parseInt(this.ipMask.textBoxes[2].value).toString(2) +
-                       parseInt(this.ipMask.textBoxes[3].value).toString(2);
+                parseInt(this.ipMask.textBoxes[1].value).toString(2) +
+                parseInt(this.ipMask.textBoxes[2].value).toString(2) +
+                parseInt(this.ipMask.textBoxes[3].value).toString(2);
 
             let bitcount = 0;
             for (let i = 0; i < bits; i++) {
@@ -223,30 +240,30 @@ class Netcalc extends Window {
         else if (octet >= 224 && octet < 240) this.lblClass.innerHTML = "Class D";
         else this.lblClass.innerHTML = "";
 
-        let net = [];
-        let broadcast = [];
-
+        let net = [], broadcast = [];
         for (let i = 0; i < 4; i++) {
             net.push(ip[i] & mask[i]);
-            broadcast.push(ip[i] | (255-mask[i]));
+            broadcast.push(ip[i] | (255 - mask[i]));
         }
 
         let static_bits = 0;
-        if (octet > 0 && octet <= 127)        static_bits = 8;
+        if (octet > 0 && octet <= 127) static_bits = 8;
         else if (octet > 127 && octet <= 192) static_bits = 16;
-        else                                  static_bits = 24;
+        else static_bits = 24;
 
         for (let i = 0; i < 32; i++)
             this.divMap.childNodes[i].style.backgroundColor = i < this.rngCIDR.value ? "rgb(232,118,0)" : "rgb(111,212,43)";
 
         for (let i = 0; i < static_bits; i++)
             this.divMap.childNodes[i].style.backgroundColor = i < this.rngCIDR.value ? "rgb(232,0,0)" : "rgb(111,212,43)";
-        
+
         this.lblSubnet.innerHTML = "Subnet:<br>" + net.join(".");
         this.lblBroadcast.innerHTML = "Broadcast:<br>" + broadcast.join(".");
         this.lblRange.innerHTML = "Host range:<br>" + net[0] + "." + net[1] + "." + net[2] + "." + (net[3] + 1) + " - " +
-                                   broadcast[0] + "." + broadcast[1] + "." + broadcast[2] + "." + (broadcast[3]-1);
+            broadcast[0] + "." + broadcast[1] + "." + broadcast[2] + "." + (broadcast[3] - 1);
 
-        this.lblTotal.innerHTML = "Hosts:<br>" + (Math.pow(2, 32-this.rngCIDR.value) - 2);
+        this.lblTotal.innerHTML = "Hosts:<br>" + (Math.pow(2, 32 - this.rngCIDR.value) - 2);
+
+        this.divWildcard.innerHTML = `${255-mask[0]}.${255-mask[1]}.${255-mask[2]}.${255-mask[3]}`;
     }
 }

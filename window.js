@@ -197,7 +197,6 @@ class Window {
 
         this.setTitle("Title");
         this.setIcon("ico/gear.svgz");
-        this.setThemeColor(this.color);
 
         $w.array.push(this);
         this.BringToFront();
@@ -337,8 +336,8 @@ class Window {
             this.task.style.borderRadius = "0 0 12.5% 12.5%";
         }
 
-        this.task.style.backgroundColor = "rgb(" + this.themeColor[0] + "," + this.themeColor[1] + "," + this.themeColor[2] + ")";
-        if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 < 128) this.icon.style.filter = "brightness(6)";
+        this.task.style.backgroundColor = "rgb(64,64,64)";
+        this.icon.style.filter = "brightness(6)";
 
         if (this.win.style.zIndex < $w.count) this.win.style.zIndex = ++$w.count;
 
@@ -463,16 +462,6 @@ class Window {
     setIcon(icon) {
         this.icon.style.backgroundImage = "url(" + icon + ")";
         this.titleicon.style.backgroundImage = "url(" + icon + ")";
-    }
-
-    setThemeColor(color) {
-        this.themeColor = color;
-        this.content.style.backgroundColor = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
-
-        if ((this.themeColor[0] + this.themeColor[1] + this.themeColor[2]) / 3 > 127)
-            this.content.style.color = "#202020";
-        //else
-        //    this.content.style.color = "whitesmoke";
     }
 
     AddCheckBoxLabel(parent, checkbox, label) {
