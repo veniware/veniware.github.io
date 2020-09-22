@@ -32,7 +32,7 @@ class Passgen extends Window {
 
         this.lblComment = document.createElement("div");
         this.lblComment.style.display = "inline-block";
-        this.lblComment.style.minWidth = "40px";
+        this.lblComment.style.minWidth = "100px";
         this.lblComment.style.textAlign = "left";
         this.lblComment.style.marginLeft = "8px";
         this.lblComment.style.marginTop = "0px";
@@ -41,8 +41,8 @@ class Passgen extends Window {
         let grid = document.createElement("div");
         grid.style.display = "grid";
         grid.style.width = "424px";
-        grid.style.margin = "40px auto";
-        grid.style.padding = "16px 24px";
+        grid.style.margin = "40px auto 20px auto";
+        grid.style.padding = "40px";
         grid.style.backgroundColor = "rgb(192,192,192)";
         grid.style.color = "rgb(16,16,16)";
         grid.style.fontWeight = "600";
@@ -172,6 +172,10 @@ class Passgen extends Window {
         btnGenerate.style.borderRadius = "4px 0 0 4px";
         btnCopy.style.borderRadius = "0 4px 4px 0";
 
+        this.lblTtc = document.createElement("div");
+        this.lblTtc.innerHTML = "";
+        this.lblTtc.style.color = "#808080";
+        this.content.appendChild(this.lblTtc);
 
         this.cmbOptions.onchange = () => {
             switch (this.cmbOptions.value) {
@@ -411,6 +415,49 @@ class Passgen extends Window {
 
         this.divBar.style.boxShadow = color + " " + fill + "px 0 0 inset";
         this.lblComment.innerHTML = comment;
+
+
+        let combinations = Math.pow(pool, this.txtPassword.value.length);
+        let ttc = combinations / 350000000000; //time to crack in seconds
+
+        let eon = Math.floor(ttc / (1000000000 * 365 * 24 * 3600));
+        ttc -= eon * 1000000000 * 365 * 24 * 3600;
+
+        let years = Math.floor(ttc / (365 * 24 * 3600));
+        ttc -= years * (365 * 24 * 3600);
+
+        let days = Math.floor(ttc / (24 * 3600));
+        ttc -= days * (24 * 3600);
+
+        let hours = Math.floor(ttc / 3600);
+        ttc -= hours * 3600;
+
+        let minutes = Math.floor(ttc / 60);
+        ttc -= minutes * 60;
+
+        let seconds = Math.round(ttc);
+
+        let etc = ""; //Estimated Time to Crack
+        if (eon != 0)     etc  = eon == 1     ? `1 eon, `    : `${eon} eons, `;
+        if (years != 0)   etc += years == 1   ? `1 year, `   : `${years} years, `;
+        if (days != 0)    etc += days == 1    ? `1 day, `    : `${days} days, `;
+        if (hours != 0)   etc += hours == 1   ? `1 hour, `   : `${hours} hours, `;
+        if (minutes != 0) etc += minutes == 1 ? `1 minute, ` : `${minutes} minutes, `;
+
+        if (seconds != 0) {
+            if (etc.length == 0) {
+                etc += seconds == 1 ? `a second` : `${seconds} seconds`;
+            } else {
+                etc += seconds == 1 ? `and 1 second` : `and ${seconds} seconds`;
+            }
+        }
+
+        if (etc.length == 0) etc = "less then a second";
+
+        if (eon > 999999999999999)
+           this.lblTtc.innerHTML = "Infinity";
+        else
+           this.lblTtc.innerHTML = etc;
     }
 }
 
