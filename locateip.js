@@ -11,8 +11,8 @@ class LocateIp extends Window {
 
         this.hashtable = {}; //contains all elements
 
-        this.setTitle("Locate IP");
-        this.setIcon("ico/locate.svgz");
+        this.SetTitle("Locate IP");
+        this.SetIcon("ico/locate.svg");
 
         this.list = document.createElement("div");
         this.list.style.position = "absolute";
@@ -255,7 +255,7 @@ class LocateIp extends Window {
                         divLocation.style.right = "32px";
                         divLocation.style.top = "4px";
                         divLocation.style.backgroundSize = "contain";
-                        divLocation.style.backgroundImage = "url(res/locate.svgz)";
+                        divLocation.style.backgroundImage = "url(res/locate.svg)";
                         divLocation.style.filter = "invert(1)";
                         divLocation.style.cursor = "pointer";
                         element.appendChild(divLocation);

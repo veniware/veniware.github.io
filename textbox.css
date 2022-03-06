@@ -3,21 +3,23 @@ input[type="search"],
 input[type="password"],
 input[type="email"],
 input[type="number"],
+input[type="date"],
 textarea,
-select
-{
+select {
     font-size: var(--global-font-size);
     font-family: var(--global-font-family);
-
     outline: 0;
     border: none;
-    border-radius: 4px;    
+    border-radius: 4px;
     background-color: var(--control-color);
-    
     padding: 4px 8px;
     margin: 2px 4px;
+    transition: .2s;
+}
 
-    transition:.2s;
+select {
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 input[type="text"]:focus,
@@ -25,9 +27,21 @@ input[type="search"]:focus,
 input[type="password"]:focus,
 input[type="email"]:focus,
 input[type="number"]:focus,
+input[type="date"]:focus,
 textarea:focus,
 select:focus {
-    /*animation: inner-glow-ligth 2s infinite linear;*/
+    animation: inner-glow 2s infinite linear;
+}
+
+input[type="password"]{
+    background-image: url(res/credencial.svg);
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position: calc(100% + 18px) center;
+}
+
+input[type="password"]:placeholder-shown {
+    background-position: calc(100% - 4px) center;
 }
 
 input[type="text"]:disabled,
@@ -35,11 +49,8 @@ input[type="search"]:disabled,
 input[type="password"]:disabled,
 input[type="email"]:disabled,
 input[type="number"]:disabled,
+input[type="date"]:disabled,
 textarea:disabled,
 select:disabled {
-    background-color: rgb(192,192,192);
-}
-
-select:focus {
-    animation: inner-glow-ligth 2s infinite linear;
+    opacity: .8;
 }

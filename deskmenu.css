@@ -1,119 +1,78 @@
+#main {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 56px;
+    background-color: #202020;
+    background: var(--bg);
+    filter: contrast(0) brightness(.5);
+}
+
+@media (prefers-color-scheme: dark) {
+    #main {
+        background: var(--bg-dark);
+    }
+}
+
+#cap {
+    background-color: transparent;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    animation: wakeup .4s linear;
+}
+
+#container {
+    position: absolute;
+
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0;
+
+    perspective: 800px;
+    perspective-origin: center;
+}
+
+#bottombar {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0;
+    height: 56px;
+    background-color: #E87600;
+    background: var(--toolbar-bg);
+
+    border-right: 3px dotted rgba(64,64,64,.4);
+
+    transition: .2s;
+}
+
 #analog_clock {
-    filter: drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px);
-	position: absolute;
-	right: 16px;
-	bottom: 16px;
+    filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
 }
 
 #analog_clock_h,
 #analog_clock_m {
-	stroke: #202020;
-	transition: .8s;
-	transform-origin: 50% 50%;
+    stroke: #202020;
+    transform-origin: 50% 50%;
+    transition: transform .8s;
 }
 
 #date_calendar {
-    filter: drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px);
-	position: absolute;
-	right: 128px;
-	bottom: 16px;
-}
-
-
-#booger {
+    filter: drop-shadow(rgba(255,255,255,.4) 0 0 1px);
     position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 48px;
-    height: 48px;
-    background: var(--booger-bg);
-    background-color: var(--booger-bg);
-    border-radius: 4px 8px 48px 8px;
-    box-shadow: rgba(0,0,0,.2) 2px 2px 2px;
-    z-index: 9999999999;
-
-    transform-origin: 0 50%;
-
-    transition:
-        filter .4s,
-        border-radius .4s,
-        height .2s,
-        transform .00001s;
-
-    transition-timing-function: cubic-bezier(0,1.5,1,1);
+    right: 128px;
+    bottom: 16px;
 }
 
-#booger > #imgSearch {
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    width: 32px;
-    height: 32px;
-    transform-origin: 0 0;
-
-    background-image: url(ico/search.svgz);
-    background-size: cover;
-
-    transition: .2s;
-}
-
-#sidemenu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-
-    transform: translate(-100%);
-    transition: .25s;
-}
-
-#backcolor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-
-    transform: translate(-100%);
-    background-color: #808080;
-    mix-blend-mode: multiply;
-
-    transition: .2s;
-}
-
-#txtSearch {
-    margin-top: 40px;
-    padding: 6px 8px;
-    background-color: rgb(208,208,208);
-    width: 400px;
-    max-width: 80%;
-    text-align: center;
-    font-size: 20px;
-    background-image: url(ico/search.svgz);
-    background-repeat: no-repeat;
-    background-size: 32px 32px;
-    background-position: 4px 4px;
-}
-
-#grid {
-    width: 90%;
-    position: absolute;
-    left: 5%;
-    top: 192px;
-    bottom: 128px;
-    overflow-y: auto;
-}
-
-@media only screen and (max-height: 480px) {
-    #grid {
-        bottom: 8px;
-    }
-
-    #analog_clock,
-    #date_calendar {
+@media only screen and (max-height: 280px) {
+    #analog_clock, #date_calendar {
         opacity: 0;
         visibility: hidden;
         transform: translateY(96px);
@@ -121,89 +80,30 @@
     }
 }
 
-#grid > div {
-    background-color: rgb(224,224,224);
-    box-shadow: rgb(160,160,160) 0 0px 4px;
-    text-align: center;
-    font-weight: 600;
-    display: inline-block;
-    padding: 8px;
-    margin: 4px;
-    border-radius: 4px;
-    outline: none;
+.loader {
+    position: relative;
+    margin: 64px auto;
+    max-width: 300px;
+    width: 50%;
+    z-index: 1000;
+    transition: .2s;
+}
 
+.loader-container {
+    border: var(--theme-color) solid 2px;
+    border-radius: 4px;
+}
+
+.loader-container > .loader-progress {
+    width: 0%;
+    height: 8px;
+    border-radius: 1px;
+    background-color: var(--theme-color);
     transition: .1s;
 }
 
-#grid > div:focus,
-#grid > div:hover {
-    background-color: var(--theme-color);
-    box-shadow: var(--theme-color) 0 0px 4px;
-}
-
-#grid > div:hover > div:nth-child(1) {
-    transform: scale(1.1);
-    transition: .2s;
-}
-
-#grid > div > div:nth-child(1) { /*icon*/
-    width: 128px;
-    height: 72px;
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-}
-
-#grid > div > div:nth-child(2) { /*name*/
-    font-size: 14px;
-    width: 128px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 4px 0;
-}
-
-#close_box {
-    position: absolute;
-    right: 8px;
-    top: 38px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    background-image: url(res/close.svgz);
-
-    background-size: contain;
-    filter: invert(1) drop-shadow(0px 0px 1px black);
-
-    transition: .2s;
-}
-
-@media only screen and (max-width: 640px) {
-    #close_box {
-        opacity: 0;
-        visibility: hidden;
-        transform: translateX(16px);
-    }
-}
-
-#close_box:active {
-    transform: scale(1.1);
-}
-
-@media only screen and (max-height: 600px) {
-    #grid > div {
-        padding: 4px 8px;
-        margin: 4px;
-    }
-
-    #grid > div > div:nth-child(1) { /*icon*/
-        width: 96px;
-        height: 72px;
-    }
-
-    #grid > div > div:nth-child(2) { /*name*/
-        width: 96px;
-        font-size: 12px;
-        padding: 2px 0;
-    }
+.loader-description {
+    text-align: center;
+    color: var(--theme-color);
+    padding-top: 8px;
 }

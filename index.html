@@ -1,116 +1,79 @@
-﻿<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <title>veniware</title>
-    <meta charset="utf-8">
-    <meta name="theme-color" content="#202020">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="This repo is the official site of veniware. Here you can find demos and the source code of most of my work.">
 
-    <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="theme.css" />
-    <link rel="stylesheet" href="deskmenu.css" />
-    <link rel="stylesheet" href="window.css" />
-    <link rel="stylesheet" href="tip.css" />
-    <link rel="stylesheet" href="button.css" />
-    <link rel="stylesheet" href="textbox.css" />
-    <link rel="stylesheet" href="checkbox.css" />
-    <link rel="stylesheet" href="range.css" />
+<head>
+    <meta charset="utf-8">
+    <title>veniware</title>
+    <link rel="icon" id="favicon">
+
+    <meta name="theme-color" content="#E87600">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">  
+
+    <link rel="stylesheet" href="root.css">
+    <link rel="stylesheet" href="deskmenu.css">
+
+    <style>
+        #cap {visibility:hidden}
+        #btnMenu {filter:opacity(0)}
+        #menu {transform:translateX(calc(-100% - 8px))}
+        noscript > div {
+            position:sticky;
+            padding:16px;
+            text-align:center;
+            background-color:rgb(32,32,32);
+            color:white
+        }
+    </style>
 </head>
+
 <body>
-    <div id="main">
+    <div id="main" aria-label="Work area">
+        <div id="cap"></div>
+
         <div id="container">
-            <div id="booger" role="button" aria-label="menu">
-                <div id="imgSearch"></div>
-            </div>
-            
-            <svg id="analog_clock" width="96" height="96">
+            <svg id="analog_clock" aria-label="Time" width="96" height="96">
                 <circle cx="48" cy="48" r="44" stroke="#202020" stroke-width="6" fill="rgba(224,224,224,.7)"/>
                 <circle cx="48" cy="48" r="4" fill="#202020"/>
                 <line id="analog_clock_h" x1="48" y1="48" x2="48" y2="24" stroke-width="5"/>
                 <line id="analog_clock_m" x1="48" y1="48" x2="48" y2="16" stroke-width="3"/>
             </svg>
 
-            <svg id="date_calendar" width="96" height="96">
+            <svg id="date_calendar" aria-label="Date" width="96" height="96">
                 <defs>
                     <mask id="date_month_mask">
                         <rect width="100%" height="100%" fill="#fff"/>
-                        <text id="date_month" x="50%" y="18px" font-size="18" font-weight="bold" fill="#000" text-anchor="middle"></text>
+                        <text id="date_month" x="50%" y="18px" font-size="16" font-weight="bold" fill="#000" text-anchor="middle"></text>
                     </mask>
                 </defs>
                 <rect x="2" y="2" width="92" height="92" fill="rgba(224,224,224,.7)"/>
                 <path mask="url(#date_month_mask)" fill="#202020" d="M93.5,0h-91C1.119,0,0,1.119,0,2.5v91C0,94.881,1.119,96,2.5,96h91c1.381,0,2.5-1.119,2.5-2.5v-91 C96,1.119,94.881,0,93.5,0z M91,88.5c0,1.381-1.117,2.5-2.495,2.5H7.495C6.117,91,5,89.881,5,88.5v-61C5,26.119,6.117,25,7.495,25 h81.01C89.883,25,91,26.119,91,27.5V88.5z"/>
                 <text id="date_date" x="50%" y="64px" font-size="40" font-weight="bold" fill="#202020" text-anchor="middle"></text>
-                <text id="date_day" x="50%" y="80px" font-size="15" fill="#202020" text-anchor="middle"></text>
+                <text id="date_day" x="50%" y="80px" font-size="14" fill="#202020" text-anchor="middle"></text>
             </svg>
-            </svg>
+        </div>
+
+        <div id="btnMenu" role="button" aria-label="Menu">
+            <div id="divIcon"></div>
+        </div>
+
+        <div id="menu">
+            <div id="searchbox">
+                <div id="imgSearch"></div>
+                <input id="txtSearch" type="text" autocomplete="off" autocorrect="off" />
+                <div id="btnSearchClear"></div>
+            </div>
+
+            <div id="menulist"></div>
+            <div id="btnSettings"></div>
         </div>
     </div>
 
-    <div id="bottombar"></div>
-    <div id="backcolor"></div>
-
-    <div id="sidemenu">
-        <div id="close_box"></div>
-        <center>
-            <input type="text" id="txtSearch" placeholder="Search..." aria-label="search box" />
-        </center>
-        <div id="grid"></div>
-    </div>
+    <div id="bottombar" aria-label="Task bar"></div>
 
     <noscript>
-        <div style="position:sticky; text-align:center; background-color:rgb(32,32,32); padding:16px; color:white;">
-            Javascript is either disabled or not supported by your browser.
-        </div>
+        <div>Javascript is either disabled or not supported by your browser.</div>
     </noscript>
-
-    <script src="deskmenu.js"></script>
-    <script src="window.js"></script>
-    <script src="booger.js"></script>
-    <script src="ctr_ipbox.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {            
-
-            let scriptsToDo = [
-                "tools/passgen.js",
-                "tools/netcalc.js",
-                "tools/maclookup.js",
-                "tools/locateip.js"
-            ];
-
-            const loadScript = name => {
-                return new Promise((resolve, reject) => {
-                    if (document.head.querySelectorAll("script[src$='" + name + "']").length == 0) {
-                        let script = document.createElement("script");
-                        script.onload  = ()=> { resolve(script); };
-                        script.onerror = ()=> { reject(script); };
-                        script.src = name;
-                        script.setAttribute("async", true);
-                        script.setAttribute("defer", true);
-                        document.body.appendChild(script);
-                    } else 
-                        reject();                
-                });
-            };
-
-            let scriptsPromises = [];
-            for (let i = 0; i < scriptsToDo.length; i++)
-                scriptsPromises.push(loadScript(scriptsToDo[i]));
-
-            fragment = window.location.href.substring(window.location.href.indexOf("#") + 1, window.location.href.length);
-
-            Promise.all(scriptsPromises).then(() => {
-                switch (fragment) {
-                    case "passgen":   new Passgen(); break;
-                    case "netcalc":   new Netcalc(); break;
-                    case "maclookup": new MacLookup(); break;
-                    case "locateip":  new LocateIp(); break;
-                }
-            });
-
-        });
-    </script>
-
-</body>
-</html>
+    <script src="ui.js"></script>
+    <script src="loader.js"></script>
+</body></html>

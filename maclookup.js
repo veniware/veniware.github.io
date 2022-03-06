@@ -11,8 +11,8 @@ class MacLookup extends Window {
 
         this.hashtable = {}; //contains all elements
 
-        this.setTitle("MAC lookup");
-        this.setIcon("ico/maclookup.svgz");
+        this.SetTitle("MAC lookup");
+        this.SetIcon("ico/maclookup.svg");
 
         this.list = document.createElement("div");
         this.list.style.position = "absolute";

@@ -2,8 +2,8 @@ class Passgen extends Window {
     constructor() {
         super();
 
-        this.setTitle("Password generator");
-        this.setIcon("ico/passgen.svgz");
+        this.SetTitle("Password generator");
+        this.SetIcon("res/passgen.svg");
 
         this.content.style.padding = "32px 16px 0 16px";
         this.content.style.overflowY = "auto";
@@ -16,9 +16,12 @@ class Passgen extends Window {
         this.txtPassword.style.width = "60%";
         this.txtPassword.style.maxWidth = "720px";
         this.txtPassword.style.margin = "2px calc(20% - 32px)";
+        this.txtPassword.style.fontFamily = "monospace";
         this.content.appendChild(this.txtPassword);
 
         this.divStrength = document.createElement("div");
+        this.divStrength.style.marginTop = "4px";
+        this.divStrength.style.marginTop = "4px";
         this.divStrength.style.marginTop = "4px";
         this.content.appendChild(this.divStrength);
 
@@ -28,6 +31,8 @@ class Passgen extends Window {
         this.divBar.style.width = "40px";
         this.divBar.style.height = "12px";
         this.divBar.style.transition = "box-shadow .2s";
+        this.divBar.style.border = "1px solid rgb(127,127,127)";
+        this.divBar.style.borderRadius = "2px";
         this.divStrength.appendChild(this.divBar);
 
         this.lblComment = document.createElement("div");
@@ -38,12 +43,12 @@ class Passgen extends Window {
         this.lblComment.style.marginTop = "0px";
         this.divStrength.appendChild(this.lblComment);
 
-        let grid = document.createElement("div");
+        const grid = document.createElement("div");
         grid.style.display = "grid";
         grid.style.width = "424px";
         grid.style.margin = "40px auto 20px auto";
         grid.style.padding = "40px";
-        grid.style.backgroundColor = "rgb(192,192,192)";
+        grid.style.backgroundColor = "var(--pane-color)";
         grid.style.color = "rgb(16,16,16)";
         grid.style.fontWeight = "600";
         grid.style.borderRadius = "4px";
@@ -139,6 +144,22 @@ class Passgen extends Window {
         divSymbols.appendChild(this.chkSymbols);
         this.AddCheckBoxLabel(divSymbols, this.chkSymbols, "Symbols");
 
+        const lblEntropy = document.createElement("div");
+        lblEntropy.innerHTML = "Entropy (bits):";
+        lblEntropy.style.gridArea = "4 / 1";
+        lblEntropy.style.textAlign = "right";
+        lblEntropy.style.paddingRight = "4px";
+        lblEntropy.style.color = "#808080";
+        grid.appendChild(lblEntropy);
+
+        this.lblEntropyValue = document.createElement("div");
+        this.lblEntropyValue.style.gridArea = "4 / 2";
+        this.lblEntropyValue.style.textAlign = "left";
+        this.lblEntropyValue.style.fontWeight = "normal";
+        this.lblEntropyValue.style.paddingLeft = "12px";
+        this.lblEntropyValue.style.color = "#808080";
+        grid.appendChild(this.lblEntropyValue);
+
         this.rngLength.oninput = () => {
             this.txtLength.value = this.rngLength.value;
             this.Generate();
@@ -153,15 +174,15 @@ class Passgen extends Window {
         divButtons.style.width = "100%";
         divButtons.style.textAlign = "center";
         divButtons.style.paddingTop = "32px";
-        divButtons.style.gridArea = "5 / 1 / 6 / 3";
+        divButtons.style.gridArea = "5 / 1 / 7 / 3";
         grid.appendChild(divButtons);
 
-        let btnGenerate = document.createElement("input");
+        const btnGenerate = document.createElement("input");
         btnGenerate.type = "button";
         btnGenerate.value = "Generate";
         divButtons.appendChild(btnGenerate);
 
-        let btnCopy = document.createElement("input");
+        const btnCopy = document.createElement("input");
         btnCopy.type = "button";
         btnCopy.value = "Copy";
         divButtons.appendChild(btnCopy);
@@ -182,6 +203,7 @@ class Passgen extends Window {
                 case "pin":
                     this.rngLength.min = 4;
                     this.rngLength.value = 4;
+                    this.rngLength.max = 64;
                     this.chkNumbers.checked = true;
                     this.chkLowercase.checked = false;
                     this.chkUppercase.checked = false;
@@ -190,11 +212,13 @@ class Passgen extends Window {
                     this.chkUppercase.setAttribute("disabled", true);
                     this.chkNumbers.setAttribute("disabled", true);
                     this.chkSymbols.setAttribute("disabled", true);
+                    lblLength.innerHTML = "Lenght:";
                     break;
 
                 case "rnd":
                     this.rngLength.value = 16;
                     this.rngLength.min = 6;
+                    this.rngLength.max = 64;
                     this.chkLowercase.checked = true;
                     this.chkUppercase.checked = true;
                     this.chkNumbers.checked = false;
@@ -203,11 +227,13 @@ class Passgen extends Window {
                     this.chkUppercase.removeAttribute("disabled");
                     this.chkNumbers.removeAttribute("disabled");
                     this.chkSymbols.removeAttribute("disabled");
+                    lblLength.innerHTML = "Lenght:";
                     break;
 
                 case "mem":
                     this.rngLength.min = 2;
                     this.rngLength.value = 4;
+                    this.rngLength.max = 32;
                     this.chkLowercase.checked = true;
                     this.chkUppercase.checked = false;
                     this.chkNumbers.checked = false;
@@ -216,6 +242,7 @@ class Passgen extends Window {
                     this.chkUppercase.removeAttribute("disabled");
                     this.chkNumbers.removeAttribute("disabled");
                     this.chkSymbols.setAttribute("disabled", true);
+                    lblLength.innerHTML = "Words:";
                     break;
             }
 
@@ -226,7 +253,6 @@ class Passgen extends Window {
 
             this.Generate();
         };
-
 
         this.chkLowercase.onchange = this.chkUppercase.onchange = this.chkNumbers.onchange = this.chkSymbols.onchange = () => { this.Generate(); };
 
@@ -279,8 +305,10 @@ class Passgen extends Window {
     }
 
     LoadWords() {
-        let xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
+            if (xhr.status == 403) location.reload(); //authorization
+
             if (xhr.readyState == 4 && xhr.status == 200) {
                 let words = xhr.responseText.split("\n");
                 if (words.length > 2) this.words = words;
@@ -355,12 +383,7 @@ class Passgen extends Window {
         }
 
         if (this.chkSymbols.checked) {
-            pool.push(" !#$%&()*+-<=>?@^_~");
-            flag.push(false);
-        }
-
-        if (false) {
-            pool.push("\"',./[\\]`{|}");
+            pool.push("!#$%&()*+-<=>?@^_~,./[\\]{|}");
             flag.push(false);
         }
 
@@ -404,18 +427,19 @@ class Passgen extends Window {
         if (this.chkNumbers.checked) pool += 10;
         if (this.chkUppercase.checked) pool += 26;
         if (this.chkLowercase.checked) pool += 26;
-        if (this.chkSymbols.checked) pool += 32;
+        if (this.chkSymbols.checked) pool += 30;
 
-        let entropy = Math.log(Math.pow(pool, this.txtPassword.value.length), 2);
+        let entropy = Math.log(pool, 2) * this.txtPassword.value.length;
+        //same as     Math.log(Math.pow(pool, this.txtPassword.value.length), 2))
 
         let strength = StrengthBar(entropy);
-        let color = strength[0];
-        let fill = strength[1];
-        let comment = strength[2];
+        let color    = strength[0];
+        let fill     = strength[1];
+        let comment  = strength[2];
 
-        this.divBar.style.boxShadow = color + " " + fill + "px 0 0 inset";
+        this.divBar.style.boxShadow = `${color} ${Math.round(fill)}px 0 0 inset`;
         this.lblComment.innerHTML = comment;
-
+        this.lblEntropyValue.innerHTML = Math.round(entropy);
 
         let combinations = Math.pow(pool, this.txtPassword.value.length);
         let ttc = combinations / 350000000000; //time to crack in seconds
@@ -455,9 +479,9 @@ class Passgen extends Window {
         if (etc.length == 0) etc = "less then a second";
 
         if (eon > 999999999999999)
-           this.lblTtc.innerHTML = "Infinity";
+            this.lblTtc.innerHTML = "<u>TTC:</u>&nbsp;Infinity";
         else
-           this.lblTtc.innerHTML = etc;
+            this.lblTtc.innerHTML = `<u>TTC:</u>&nbsp;${etc}`;
     }
 }
 
