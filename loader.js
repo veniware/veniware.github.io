@@ -138,27 +138,30 @@ function StoreSession() {
 function RestoreSession() {
     let session = JSON.parse(localStorage.getItem("session") ?? {});
 
-    if (session === null) {
-        const win = new Guide("first");
-        win.win.style.left = "10%";
-        win.win.style.top = "10%";
-        win.win.style.width = "80%";
-        win.win.style.height = "80%";
-    } 
+    if (localStorage.getItem("restore_session") != "true") {
+        fragment = window.location.href.substring(window.location.href.indexOf("#") + 1, window.location.href.length);
+        switch (fragment) {
+            case "passgen"  : new Passgen(); break;
+            case "netcalc"  : new Netcalc(); break;
+            case "maclookup": new MacLookup(); break;
+            case "locateip" : new LocateIp(); break;
+            case "chess"    : new Chess(); break;
+        }
+        return;
+    }
 
-    if (localStorage.getItem("restore_session") != "true") return;
     if (session == null || session.length == 0) return;    
 
     for (let i = 0; i < session.length; i++) {
         let win;
         switch (session[i].class) {
-            case "Passgen"          : win = new Passgen(); break;
-            case "Netcalc"          : win = new Netcalc(); break;
-            case "MacLookup"        : win = new MacLookup(session[i].args); break;
-            case "LocateIp"         : win = new LocateIp(session[i].args); break;
-            case "Encoder"          : win = new Encoder(session[i].args); break;
-            case "Chess"            : win = new Chess(session[i].args); break;
-            case "Settings"         : win = new Settings(session[i].args); break;
+            case "Passgen"   : win = new Passgen(); break;
+            case "Netcalc"   : win = new Netcalc(); break;
+            case "MacLookup" : win = new MacLookup(session[i].args); break;
+            case "LocateIp"  : win = new LocateIp(session[i].args); break;
+            case "Encoder"   : win = new Encoder(session[i].args); break;
+            case "Chess"     : win = new Chess(session[i].args); break;
+            case "Settings"  : win = new Settings(session[i].args); break;
         }
 
         if (win) {

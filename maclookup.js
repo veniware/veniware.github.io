@@ -1,56 +1,30 @@
-class MacLookup extends Window {
-    constructor() {
+class MacLookup extends Console {
+    constructor(args) {
         super();
 
-        if (document.head.querySelectorAll("link[href$='tools.css']").length == 0) {
-            let csslink = document.createElement("link");
-            csslink.rel = "stylesheet";
-            csslink.href = "tools.css";
-            document.head.appendChild(csslink);
-        }
+        this.args = args ? args : { entries: [] };
 
         this.hashtable = {}; //contains all elements
 
         this.SetTitle("MAC lookup");
-        this.SetIcon("ico/maclookup.svg");
+        this.SetIcon("res/maclookup.svg");
 
-        this.list = document.createElement("div");
-        this.list.style.position = "absolute";
-        this.list.style.overflowY = "auto";
-        this.list.style.left = "0";
-        this.list.style.right = "0";
-        this.list.style.top = "0";
-        this.list.style.bottom = "28px";
-        this.list.className = "no-entries";
-        this.content.appendChild(this.list);
-
-        this.txtInput = document.createElement("input");
-        this.txtInput.type = "text";
-        this.txtInput.style.position = "absolute";
-        this.txtInput.style.left = "0";
-        this.txtInput.style.width = "100%";
-        this.txtInput.style.bottom = "0px";
-        this.txtInput.className = "input-box-floatting";
         this.txtInput.placeholder = "mac address";
-        this.content.appendChild(this.txtInput);
 
-        this.lblTitle.style.left = TOOLBAR_GAP + this.toolbox.childNodes.length * 22 + "px";
+        this.lblTitle.style.left = TOOLBAR_GAP + this.toolbox.childNodes.length * 29 + "px";
 
-        this.txtInput.onkeydown = (event) => {
-            if (this.txtInput.value.length == 0) return;
-            if (event.keyCode == 13) { //enter
-                this.Filter(this.txtInput.value.trim().toUpperCase());
-                this.list.scrollTop = this.list.scrollHeight;
-                this.txtInput.value = "";
-                event.preventDefault();
-            }
-        };
+        if (this.args.entries) { //restore entries from previous session
+            let temp = this.args.entries;
+            this.args.entries = [];
+            for (let i = 0; i < temp.length; i++)
+                this.Push(temp[i]);
+        }
+    }
 
-        this.defaultElement = this.txtInput;
-        this.txtInput.focus();
-
-        this.txtInput.onfocus = () => { this.BringToFront(); };
-        this.escAction = () => { this.txtInput.value = ""; };
+    
+    Push(name) { //override
+        if (!super.Push(name)) return;
+        this.Filter(name);
     }
 
     BringToFront() { //override
@@ -111,6 +85,8 @@ class MacLookup extends Window {
         };
 
         remove.onclick = () => { this.Remove(macaddr); };
+        
+        this.args.entries.push(macaddr);
 
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
@@ -202,6 +178,10 @@ class MacLookup extends Window {
         if (!this.hashtable.hasOwnProperty(macaddr)) return;
         this.list.removeChild(this.hashtable[macaddr].element);
         delete this.hashtable[macaddr];
+        
+        const index = this.args.entries.indexOf(macaddr);
+        if (index > -1)
+            this.args.entries.splice(index, 1);
     }
 
 }
