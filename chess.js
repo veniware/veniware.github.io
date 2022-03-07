@@ -564,6 +564,8 @@ class Chess extends Window {
         this.selected.style.zIndex = "1";
         this.selected.style.transition = "none";
 
+        if (isTouch) this.selected.style.transform = "scale(1.2)";
+
         this.board.style.cursor = "none";
         this.squares[this.file0][this.rank0].style.boxShadow = `var(--theme-color) 0 0 0px ${this.board.getBoundingClientRect().width / 120}px inset`;
 
@@ -589,7 +591,7 @@ class Chess extends Window {
 
         if (this.selected) {
             let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x - this.x0;
-            let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY - this.y0 : this.selectedPosition.y + event.y - this.y0;
+            let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY -  this.board.getBoundingClientRect().height / 8 - this.y0 : this.selectedPosition.y + event.y - this.y0;
 
             x = Math.max(x, -this.board.getBoundingClientRect().width / 16);
             x = Math.min(x, this.board.getBoundingClientRect().width - this.board.getBoundingClientRect().height / 16);
@@ -597,7 +599,7 @@ class Chess extends Window {
             y = Math.min(y, this.board.getBoundingClientRect().height - this.board.getBoundingClientRect().height / 16);
 
             this.selected.style.left = x + "px";
-            this.selected.style.top = isTouch ? y - this.board.getBoundingClientRect().height / 8 + "px" : y + "px";
+            this.selected.style.top = y + "px";
         }
     }
 
@@ -611,8 +613,9 @@ class Chess extends Window {
             file1 = Math.max(0, Math.min(7, file1));
             rank1 = Math.max(0, Math.min(7, rank1));
 
-            this.selected.style.zIndex = "0";
             this.selected.style.transition = ".2s";
+            this.selected.style.transform = "none";
+            this.selected.style.zIndex = "0";
 
             this.board.style.cursor = "inherit";
 
@@ -648,6 +651,7 @@ class Chess extends Window {
         this.selected.style.transition = ".2s";
         this.selected.style.left = this.selectedPosition.x * 100 / this.board.getBoundingClientRect().width + "%";
         this.selected.style.top = this.selectedPosition.y * 100 / this.board.getBoundingClientRect().height + "%";
+        this.selected.style.transform = "none";
         this.selected.style.zIndex = "0";
         this.selected.style.cursor = "inherit";
         this.selected = null;
