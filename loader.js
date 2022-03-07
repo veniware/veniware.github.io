@@ -41,13 +41,13 @@ let loader_styles = [
     ];
 
     const tertiaryScripts = [
+        "settings.js",
         "tools/passwordgen.js",
         "tools/netcalc.js",
         "tools/maclookup.js",
         "tools/locateip.js",
         "tools/encoder.js",
-        "chess/chess.js",
-        "settings.js"
+        "chess/chess.js"
     ];
 
     let count = 0;

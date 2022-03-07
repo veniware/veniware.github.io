@@ -4,8 +4,8 @@ const TOOLS = [
 
 { lbl:"Password generator", ico:"res/passgen.svg",       grp:"*",         sqr:true,  f:arg=> new Passgen() },
 { lbl:"Network calculator", ico:"res/netcalc.svg",       grp:"utilities", sqr:true,  f:arg=> new Netcalc(arg) },
-{ lbl:"MAC lookup",         ico:"res/maclookup.svg",      grp:"utilities", sqr:true,  f:arg=> new MacLookup(arg) },
-{ lbl:"Locate IP",          ico:"res/locate.svg",         grp:"utilities", sqr:true,  f:arg=> new LocateIp(arg) },
+{ lbl:"MAC lookup",         ico:"res/maclookup.svg",     grp:"utilities", sqr:true,  f:arg=> new MacLookup(arg) },
+{ lbl:"Locate IP",          ico:"res/locate.svg",        grp:"utilities", sqr:true,  f:arg=> new LocateIp(arg) },
 { lbl:"Encoder",            ico:"res/encoder.svg",       grp:"*",         sqr:true,  f:arg=> new Encoder() },
 
 { lbl:"Settings",           ico:"res/tool02.svg",        grp:"*", sqr:false, f:arg=> new Settings() },

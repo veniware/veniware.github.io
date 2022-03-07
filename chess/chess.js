@@ -87,6 +87,10 @@ class Chess extends Window {
         this.sidepanel.className = "chess-sidepanel";
         this.content.appendChild(this.sidepanel);
 
+        this.moveslist = document.createElement("div");
+        this.moveslist.className = "chess-moveslist";
+        this.sidepanel.appendChild(this.moveslist);
+
         setTimeout(() => {
             this.AfterResize();
         }, ANIM_DURATION);
@@ -307,11 +311,12 @@ class Chess extends Window {
         if (this.game.placement[p1.x][p1.y] !== null) { //capture a piece
             const captured = pieces.find(ele => ele !== this.selected && ele.style.left === p1.x * 12.5 + "%" && ele.style.top === p1.y * 12.5 + "%");
             if (captured) this.board.removeChild(captured);
-
             this.sounds.capture.play();
         } else {
             this.sounds.move.play();
         }
+
+        this.AddChessNotation(p0, p1);
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
@@ -331,15 +336,27 @@ class Chess extends Window {
         this.args = this.GetCurrentFen();
     }
 
+    AddChessNotation(p0, p1) {
+        let piece = this.game.placement[p0.x][p0.y];
+        if (piece.toLowerCase() === "p") piece = "";
+
+        const move = document.createElement("div");
+        move.className = "chess-move";
+
+        if (this.game.placement[p1.x][p1.y] === null) {
+            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}-${String.fromCharCode(97+p1.x)}${8-p1.y}`;
+        } else {
+            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}x${String.fromCharCode(97+p1.x)}${8-p1.y}`;
+        }
+
+        this.moveslist.appendChild(move);
+    }
+
     ClearIndicators() {
         for (let i = 0; i < this.indicators.length; i++)
             this.indicators[i].parentElement.removeChild(this.indicators[i]);
 
         this.indicators = [];
-    }
-    
-    AddChessNotation() {
-        
     }
 
     GetLegalMoves(p) {
