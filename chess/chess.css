@@ -24,9 +24,9 @@
     width: 30%;
     height: 30%;
     margin: 35%;
-    background-color: var(--theme-color);
+    background-color: rgb(192,192,192);
     border-radius: 50%;
-    opacity: 60%;
+    opacity: 50%;
 
     animation: chess-fadein .4s;
 }
@@ -56,7 +56,6 @@
         transform: scale(.9);
         filter: opacity(0)
     }
-
     100% {
         transform: none;
         filter: none

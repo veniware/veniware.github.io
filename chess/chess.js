@@ -7,11 +7,18 @@ class Chess extends Window {
 
         this.args = args ? args : null;
 
-        this.AddCssDependencies("chess.css");
+        this.AddCssDependencies("chess/chess.css");
 
         this.SetTitle("Chess");
-        this.SetIcon("res/king.svg");
+        this.SetIcon("chess/king.svg");
         this.content.style.overflow = "hidden";
+
+        this.sounds = {
+            move    : new Audio("chess/move.webm"),
+            capture : new Audio("chess/capture.webm"),
+            check   : new Audio("chess/check.webm"),
+            illegal : new Audio("chess/illegal.webm"),
+        };
 
         this.board = document.createElement("div");
         this.board.className = "chess-board";
@@ -70,7 +77,6 @@ class Chess extends Window {
             coord_r.style.verticalAlign = "bottom";
             this.board.appendChild(coord_r);
         }
-
         
         if (this.args)
             this.LoadFen(this.args);
@@ -124,12 +130,12 @@ class Chess extends Window {
         piece.className = "chess-piece";
 
         switch (type.toLowerCase()) {
-            case "k": piece.style.backgroundImage = "url(res/king.svg)"; break;
-            case "q": piece.style.backgroundImage = "url(res/queen.svg)"; break;
-            case "r": piece.style.backgroundImage = "url(res/rook.svg)"; break;
-            case "n": piece.style.backgroundImage = "url(res/knight.svg)"; break;
-            case "b": piece.style.backgroundImage = "url(res/bishop.svg)"; break;
-            case "p": piece.style.backgroundImage = "url(res/pawn.svg)"; break;
+            case "k": piece.style.backgroundImage = "url(chess/king.svg)"; break;
+            case "q": piece.style.backgroundImage = "url(chess/queen.svg)"; break;
+            case "r": piece.style.backgroundImage = "url(chess/rook.svg)"; break;
+            case "n": piece.style.backgroundImage = "url(chess/knight.svg)"; break;
+            case "b": piece.style.backgroundImage = "url(chess/bishop.svg)"; break;
+            case "p": piece.style.backgroundImage = "url(chess/pawn.svg)"; break;
         }
 
         piece.style.left = position.x * 12.5 + "%";
@@ -259,7 +265,6 @@ class Chess extends Window {
             } else if (p0.x - p1.x === -2) { //kingside
                 this.game.placement[5][0] === "r";
                 this.game.placement[7][0] === null;
-
             }
         }
 
@@ -300,23 +305,49 @@ class Chess extends Window {
         }
 
         if (this.game.placement[p1.x][p1.y] !== null) { //capture a piece
-            const captured = pieces.find(element => element !== this.selected && element.style.left === p1.x * 12.5 + "%" && element.style.top === p1.y * 12.5 + "%");
+            const captured = pieces.find(ele => ele !== this.selected && ele.style.left === p1.x * 12.5 + "%" && ele.style.top === p1.y * 12.5 + "%");
             if (captured) this.board.removeChild(captured);
+
+            this.sounds.capture.play();
+        } else {
+            this.sounds.move.play();
         }
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
+        this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
         this.game.lastmove = [p0.x, p0.y, p1.x, p1.y];
 
+        for (let y = 0; y < 8; y++)
+            for (let x = 0; x < 8; x++)
+                this.squares[x][y].style.boxShadow = "none";
+
+        setTimeout(()=>{
+            let t = this.board.getBoundingClientRect().width / 120;
+            this.squares[p0.x][p0.y].style.boxShadow = `inset var(--theme-color) 0 0 ${t}px 2px`;
+            this.squares[p1.x][p1.y].style.boxShadow = `inset var(--theme-color) 0 0 ${t}px 2px`;
+        }, 0);
+        
         this.args = this.GetCurrentFen();
-        //console.log(this.GetCurrentFen());
-        //TODO:
+    }
+
+    ClearIndicators() {
+        for (let i = 0; i < this.indicators.length; i++)
+            this.indicators[i].parentElement.removeChild(this.indicators[i]);
+
+        this.indicators = [];
+    }
+    
+    AddChessNotation() {
+        
     }
 
     GetLegalMoves(p) {
         let piece = this.game.placement[p.x][p.y];
         let color = this.GetPieceColor(p);
         let moves = [];
+
+        if (color !== this.game.activecolor) return moves;
 
         const pawnMoves = () => {
             if (color === "w") {
@@ -567,7 +598,10 @@ class Chess extends Window {
         if (isTouch) this.selected.style.transform = "scale(1.2)";
 
         this.board.style.cursor = "none";
-        this.squares[this.file0][this.rank0].style.boxShadow = `var(--theme-color) 0 0 0px ${this.board.getBoundingClientRect().width / 120}px inset`;
+        if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+            this.squares[this.file0][this.rank0].style.boxShadow = `inset rgba(192,192,192,.5) 0 0 0 ${this.board.getBoundingClientRect().width / 120}px`;
+
+        this.ClearIndicators();
 
         this.legalMoves = this.GetLegalMoves({ x: this.file0, y: this.rank0 });
         for (let i = 0; i < this.legalMoves.length; i++) {
@@ -581,7 +615,7 @@ class Chess extends Window {
                 indicator.style.height = "70%";
                 indicator.style.margin = "15%";
                 indicator.style.backgroundColor = "transparent";
-                indicator.style.boxShadow = `var(--theme-color) 0 0 0 ${this.board.getBoundingClientRect().width / 100}px`;
+                indicator.style.boxShadow = `rgb(192,192,192) 0 0 0 ${this.board.getBoundingClientRect().width / 100}px`;
             }
         }
     }
@@ -629,20 +663,17 @@ class Chess extends Window {
             } else { //undo
                 this.selected.style.left = this.file0 * 100 / 8 + "%";
                 this.selected.style.top = this.rank0 * 100 / 8 + "%";
+                //this.sounds.illegal.play();
             }
-
-            for (let i = 0; i < this.squares.length; i++)
-                for (let j = 0; j < this.squares[i].length; j++)
-                    this.squares[i][j].style.boxShadow = "none";
-
-            for (let i = 0; i < this.indicators.length; i++)
-                this.indicators[i].parentElement.removeChild(this.indicators[i]);
+            
+            if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+                this.squares[this.file0][this.rank0].style.boxShadow = "none";
 
             this.legalMoves = [];
-            this.indicators = [];
         }
 
         this.selected = null;
+        this.ClearIndicators();
     }
 
     Board_mouseleave(event, isTouch) {
@@ -656,21 +687,13 @@ class Chess extends Window {
         this.selected.style.cursor = "inherit";
         this.selected = null;
 
-        for (let i = 0; i < this.squares.length; i++)
-            for (let j = 0; j < this.squares[i].length; j++)
-                this.squares[i][j].style.boxShadow = "none";
+        if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+            this.squares[this.file0][this.rank0].style.boxShadow = "none";
 
         this.board.style.cursor = "inherit";
 
-        for (let i = 0; i < this.squares.length; i++)
-            for (let j = 0; j < this.squares[i].length; j++)
-                this.squares[i][j].style.boxShadow = "none";
-
-        for (let i = 0; i < this.indicators.length; i++)
-            this.indicators[i].parentElement.removeChild(this.indicators[i]);
-
         this.legalMoves = [];
-        this.indicators = [];
+        this.ClearIndicators();
     }
 
 }

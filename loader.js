@@ -41,12 +41,12 @@ let loader_styles = [
     ];
 
     const tertiaryScripts = [
-        "passwordgen.js",
-        "netcalc.js",
-        "maclookup.js",
-        "locateip.js",
-        "encoder.js",
-        "chess.js",
+        "tools/passwordgen.js",
+        "tools/netcalc.js",
+        "tools/maclookup.js",
+        "tools/locateip.js",
+        "tools/encoder.js",
+        "chess/chess.js",
         "settings.js"
     ];
 

@@ -13,7 +13,7 @@ const TOOLS = [
 { lbl:"Session",            ico:"res/hourglass.svg",     grp:"*", sqr:false, f:arg=> new Settings("session") },
 { lbl:"License",            ico:"res/gpl.svg",           grp:"*", sqr:false, f:arg=> new Settings("legal") },
 
-{ lbl:"Chess",              ico:"res/king.svg",          grp:"*", sqr:true, f:arg=> new Chess()}
+{ lbl:"Chess",              ico:"chess/king.svg",        grp:"*", sqr:true, f:arg=> new Chess()}
 ];
 
 let AUTHORIZATION = {};
