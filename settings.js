@@ -10,7 +10,7 @@
     if (localStorage.getItem("accent_color"))
         SetAccentColor(localStorage.getItem("accent_color").split(",").map(o => parseInt(o)));
     else
-        SetAccentColor([255, 102, 0]);
+        SetAccentColor([255, 51, 34]);
        
     if (localStorage.getItem("background"))
         main.style.background = localStorage.getItem("background");
@@ -97,7 +97,7 @@ class Settings extends Tabs {
         this.subContent.appendChild(divColor);
 
         this.accentIndicators = [];
-        let selected_accent = [255, 102, 0];
+        let selected_accent = [255, 51, 34];
         if (localStorage.getItem("accent_color"))
             selected_accent = localStorage.getItem("accent_color").split(",").map(o => parseInt(o));
 
@@ -265,7 +265,7 @@ class Settings extends Tabs {
         this.chkRestoreSession = document.createElement("input");
         this.chkRestoreSession.type = "checkbox";
         this.subContent.appendChild(this.chkRestoreSession);
-        this.AddCheckBoxLabel(this.subContent, this.chkRestoreSession, "Re-open previous windows on page load").style.fontWeight = "600";
+        this.AddCheckBoxLabel(this.subContent, this.chkRestoreSession, "Reopen previous windows on-load").style.fontWeight = "600";
 
         this.subContent.appendChild(document.createElement("br"));
         this.subContent.appendChild(document.createElement("br"));

@@ -2,10 +2,10 @@ const FEN_START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 class Chess extends Window {
 
-    constructor() {
+    constructor(args) {
         super([64,64,64]);
 
-        this.args = null;
+        this.args = args ? args : null;
 
         this.AddCssDependencies("chess.css");
 
@@ -15,16 +15,22 @@ class Chess extends Window {
 
         this.board = document.createElement("div");
         this.board.className = "chess-board";
-        this.board.onmousemove = event => this.Board_mousemove(event);
-        this.board.onmouseup = event => this.Board_mouseup(event);
-        this.board.onmouseleave = event => this.Board_mouseleave(event);
+        
+        this.board.onmousemove  = event => this.Board_mousemove(event, false);
+        this.board.onmouseup    = event => this.Board_mouseup(event, false);
+        this.board.onmouseleave = event => this.Board_mouseleave(event, false);
+        
+        this.board.ontouchmove   = event => this.Board_mousemove(event, true);
+        this.board.ontouchend    = event => this.Board_mouseup(event, true);
+        this.board.ontouchcancel = event => this.Board_mouseleave(event, true);
+        
         this.content.appendChild(this.board);
 
         this.game = {
             fen: null,
             placement: [],
             activecolor: "w",
-            castling: "",
+            castling: "KQkq",
             enpassant: "-",
             //halfmove: 0,
             //fullmove: 1,
@@ -65,7 +71,11 @@ class Chess extends Window {
             this.board.appendChild(coord_r);
         }
 
-        this.LoadFen(FEN_START);
+        
+        if (this.args)
+            this.LoadFen(this.args);
+        else 
+            this.LoadFen(FEN_START);
 
         this.sidepanel = document.createElement("div");
         this.sidepanel.className = "chess-sidepanel";
@@ -128,7 +138,8 @@ class Chess extends Window {
         if (type === type.toUpperCase())
             piece.style.filter = "invert(1) brightness(.9)";
 
-        piece.onmousedown = event => this.Piece_mousedown(event);
+        piece.onmousedown = event => this.Piece_mousedown(event, false);
+        piece.ontouchstart = event => this.Piece_mousedown(event, true);
 
         this.board.appendChild(piece);
     }
@@ -240,22 +251,64 @@ class Chess extends Window {
         if (this.game.castling === "") this.game.castling = "-";
 
         //castling
+        if (this.game.placement[p0.x][p0.y] === "k" && Math.abs(p0.x - p1.x) === 2) {
+            if (p0.x - p1.x === 2) { //queenside
+                this.game.placement[3][0] === "r";
+                this.game.placement[0][0] === null;
+
+            } else if (p0.x - p1.x === -2) { //kingside
+                this.game.placement[5][0] === "r";
+                this.game.placement[7][0] === null;
+
+            }
+        }
+
+        const pieces = Array.from(this.board.querySelectorAll(".chess-piece"));
+        
+        if (this.game.placement[p0.x][p0.y] === "k" && Math.abs(p0.x - p1.x) === 2) { //black castling
+            if (p0.x - p1.x === 2) { //queenside
+                this.game.placement[3][0] = "r";
+                this.game.placement[0][0] = null;
+
+                const rock = pieces.find(ele=>ele.style.left === "0%" && ele.style.top === "0%");
+                rock.style.left = "37.5%";
+
+            } else if (p0.x - p1.x === -2) { //kingside
+                this.game.placement[5][0] = "r";
+                this.game.placement[7][0] = null;
+
+                const rock = pieces.find(ele=>ele.style.left === "87.5%" && ele.style.top === "0%");
+                rock.style.left = "62.5%";
+            }
+        }
+
+        if (this.game.placement[p0.x][p0.y] === "K" && Math.abs(p0.x - p1.x) === 2) { //white castling
+            if (p0.x - p1.x === 2) { //queenside
+                this.game.placement[3][7] = "R";
+                this.game.placement[0][7] = null;
+
+                const rock = pieces.find(ele=>ele.style.left === "0%" && ele.style.top === "87.5%");
+                rock.style.left = "37.5%";
+
+            } else if (p0.x - p1.x === -2) { //kingside
+                this.game.placement[5][7] = "R";
+                this.game.placement[7][7] = null;
+
+                const rock = pieces.find(ele=>ele.style.left === "87.5%" && ele.style.top === "87.5%");
+                rock.style.left = "62.5%";
+            }
+        }
 
         if (this.game.placement[p1.x][p1.y] !== null) { //capture a piece
-            const pieces = this.board.querySelectorAll(".chess-piece");
-            for (const element of pieces)
-                if (element !== this.selected &&
-                    element.style.left === p1.x * 12.5 + "%" &&
-                    element.style.top === p1.y * 12.5 + "%") {
-                    this.board.removeChild(element);
-                    break;
-                }
+            const captured = pieces.find(element => element !== this.selected && element.style.left === p1.x * 12.5 + "%" && element.style.top === p1.y * 12.5 + "%");
+            if (captured) this.board.removeChild(captured);
         }
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
         this.game.lastmove = [p0.x, p0.y, p1.x, p1.y];
 
+        this.args = this.GetCurrentFen();
         //console.log(this.GetCurrentFen());
         //TODO:
     }
@@ -349,25 +402,25 @@ class Chess extends Window {
         };
 
         const bishopMoves = () => {
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 8; i++) {
                 if (p.x - i < 0 || p.y - i < 0) break;
                 if (this.GetPieceColor({ x: p.x - i, y: p.y - i }) === color) break;
                 moves.push({ x: p.x - i, y: p.y - i });
                 if (this.game.placement[p.x - i][p.y - i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y - i }) !== color) break;
             }
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 8; i++) {
                 if (p.x - i < 0 || p.y + i > 7) break;
                 if (this.GetPieceColor({ x: p.x - i, y: p.y + i }) === color) break;
                 moves.push({ x: p.x - i, y: p.y + i });
                 if (this.game.placement[p.x - i][p.y + i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y + i }) !== color) break;
             }
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 8; i++) {
                 if (p.x + i > 7 || p.y - i < 0) break;
                 if (this.GetPieceColor({ x: p.x + i, y: p.y - i }) === color) break;
                 moves.push({ x: p.x + i, y: p.y - i });
                 if (this.game.placement[p.x + i][p.y - i] !== null && this.GetPieceColor({ x: p.x + i, y: p.y - i }) !== color) break;
             }
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 8; i++) {
                 if (p.x + i > 7 || p.y + i > 7) break;
                 if (this.GetPieceColor({ x: p.x + i, y: p.y + i }) === color) break;
                 moves.push({ x: p.x + i, y: p.y + i });
@@ -417,31 +470,36 @@ class Chess extends Window {
                 moves.push({ x: x, y: y });
             }
 
-            if (color === "w") { //TODO: castling if in check
-                if (this.game.castling.indexOf("Q") > -1 &&
-                    this.game.placement[1][7] === null &&
-                    this.game.placement[2][7] === null &&
-                    this.game.placement[3][7] === null) {
-                    moves.push({ x: p.x - 2, y: p.y });
-                }
-
-                if (this.game.castling.indexOf("K") > -1 &&
-                    this.game.placement[5][7] === null &&
-                    this.game.placement[6][7] === null) {
-                    moves.push({ x: p.x + 2, y: p.y });
-                }
-
-            } else if (color === "b") {
+             //TODO: castling if in check
+            if (color === "b") {
                 if (this.game.castling.indexOf("q") > -1 &&
+                    this.game.placement[0][0] === "r" &&
                     this.game.placement[1][0] === null &&
                     this.game.placement[2][0] === null &&
-                    this.game.placement[3][0] === null) {
+                    this.game.placement[3][0] === null) { //black queenside castling
                     moves.push({ x: p.x - 2, y: p.y });
                 }
 
                 if (this.game.castling.indexOf("k") > -1 &&
+                    this.game.placement[7][0] === "r" &&
                     this.game.placement[5][0] === null &&
-                    this.game.placement[6][0] === null) {
+                    this.game.placement[6][0] === null) { //black kingside castling
+                    moves.push({ x: p.x + 2, y: p.y });
+                }
+
+            } else if (color === "w") {
+                if (this.game.castling.indexOf("Q") > -1 &&
+                    this.game.placement[0][7] === "R" &&
+                    this.game.placement[1][7] === null &&
+                    this.game.placement[2][7] === null &&
+                    this.game.placement[3][7] === null) { //white queenside castling
+                    moves.push({ x: p.x - 2, y: p.y });
+                }
+
+                if (this.game.castling.indexOf("K") > -1 &&
+                    this.game.placement[7][7] === "R" &&
+                    this.game.placement[5][7] === null &&
+                    this.game.placement[6][7] === null) { //white kingside castling
                     moves.push({ x: p.x + 2, y: p.y });
                 }
             }
@@ -483,8 +541,8 @@ class Chess extends Window {
         return "w";
     }
 
-    Piece_mousedown(event) {
-        if (event.buttons !== 1) {
+    Piece_mousedown(event, isTouch) {
+        if (event.buttons !== 1 && !isTouch) {
             this.Board_mouseleave();
             return;
         }
@@ -495,8 +553,9 @@ class Chess extends Window {
             y: parseFloat(event.srcElement.style.top) * this.board.getBoundingClientRect().height / 100
         };
 
-        this.x0 = event.x;
-        this.y0 = event.y;
+        this.x0 = isTouch ? event.touches[0].clientX : event.x;
+        this.y0 = isTouch ? event.touches[0].clientY : event.y;
+
         this.file0 = this.selectedPosition.x * 8 / this.board.getBoundingClientRect().width;
         this.rank0 = this.selectedPosition.y * 8 / this.board.getBoundingClientRect().height;
 
@@ -525,12 +584,12 @@ class Chess extends Window {
         }
     }
 
-    Board_mousemove(event) {
-        if (event.buttons !== 1) return;
+    Board_mousemove(event, isTouch) {
+        if (event.buttons !== 1 && !isTouch) return;
 
         if (this.selected) {
-            let x = this.selectedPosition.x + event.x - this.x0;
-            let y = this.selectedPosition.y + event.y - this.y0;
+            let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x- this.x0;
+            let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY - this.y0 : this.selectedPosition.y + event.y - this.y0;
 
             x = Math.max(x, -this.board.getBoundingClientRect().width / 16);
             x = Math.min(x, this.board.getBoundingClientRect().width - this.board.getBoundingClientRect().height / 16);
@@ -542,10 +601,11 @@ class Chess extends Window {
         }
     }
 
-    Board_mouseup(event) {
+    Board_mouseup(event, isTouch) {
         if (this.selected) {
             let x = Math.min(Math.max(parseFloat(event.srcElement.style.left), 0), this.board.getBoundingClientRect().width);
             let y = Math.min(Math.max(parseFloat(event.srcElement.style.top), 0), this.board.getBoundingClientRect().height);
+            
             let file1 = Math.round(x * 8 / this.board.getBoundingClientRect().width);
             let rank1 = Math.round(y * 8 / this.board.getBoundingClientRect().height);
             file1 = Math.max(0, Math.min(7, file1));
@@ -582,7 +642,7 @@ class Chess extends Window {
         this.selected = null;
     }
 
-    Board_mouseleave(event) {
+    Board_mouseleave(event, isTouch) {
         if (!this.selected) return;
 
         this.selected.style.transition = ".2s";
