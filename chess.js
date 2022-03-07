@@ -588,7 +588,7 @@ class Chess extends Window {
         if (event.buttons !== 1 && !isTouch) return;
 
         if (this.selected) {
-            let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x- this.x0;
+            let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x - this.x0;
             let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY - this.y0 : this.selectedPosition.y + event.y - this.y0;
 
             x = Math.max(x, -this.board.getBoundingClientRect().width / 16);
@@ -597,7 +597,7 @@ class Chess extends Window {
             y = Math.min(y, this.board.getBoundingClientRect().height - this.board.getBoundingClientRect().height / 16);
 
             this.selected.style.left = x + "px";
-            this.selected.style.top = y + "px";
+            this.selected.style.top = isTouch ? y - this.board.getBoundingClientRect().height / 8 + "px" : y + "px";
         }
     }
 
