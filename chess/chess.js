@@ -91,9 +91,8 @@ class Chess extends Window {
         this.moveslist.className = "chess-moveslist";
         this.sidepanel.appendChild(this.moveslist);
 
-        setTimeout(() => {
-            this.AfterResize();
-        }, ANIM_DURATION);
+        setTimeout(() => { this.AfterResize(); }, ANIM_DURATION);
+        setTimeout(() => { this.AfterResize(); }, 1000);
     }
 
     AfterResize() { //override
@@ -233,6 +232,8 @@ class Chess extends Window {
     MovePiece(p0, p1) {
         if (p0.x === p1.x && p0.y === p1.y) return;
 
+        let isCapture = false;
+
         if (this.game.placement[p0.x][p0.y].toLowerCase() === "p" && Math.abs(p0.y - p1.y) === 2) { //en passant flag
             this.game.enpassant = String.fromCharCode(97 + p1.x) + (8 - p1.y);
         } else {
@@ -241,6 +242,7 @@ class Chess extends Window {
 
         if (this.game.placement[p0.x][p0.y].toLowerCase() === "p" && p0.x !== p1.x && this.game.placement[p1.x][p1.y] === null) { //en passant
             this.game.placement[p1.x][p0.y] = null;
+            isCapture = true;
 
             const pieces = this.board.querySelectorAll(".chess-piece");
             for (const element of pieces)
@@ -312,42 +314,102 @@ class Chess extends Window {
             const captured = pieces.find(ele => ele !== this.selected && ele.style.left === p1.x * 12.5 + "%" && ele.style.top === p1.y * 12.5 + "%");
             if (captured) this.board.removeChild(captured);
             this.sounds.capture.play();
+            isCapture = true;
         } else {
             this.sounds.move.play();
         }
-
-        this.AddChessNotation(p0, p1);
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
         this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
         this.game.lastmove = [p0.x, p0.y, p1.x, p1.y];
 
+        if (this.game.placement[p1.x][p1.y] === "P" && p1.y === 0 || 
+            this.game.placement[p1.x][p1.y] === "p" && p1.y === 7) { //promote
+            this.PromoteDialog(p1, this.selected);
+        }
+
+        this.AddChessNotation(p0, p1, isCapture);
+
         for (let y = 0; y < 8; y++)
             for (let x = 0; x < 8; x++)
                 this.squares[x][y].style.boxShadow = "none";
 
         setTimeout(()=>{
-            let t = this.board.getBoundingClientRect().width / 120;
-            this.squares[p0.x][p0.y].style.boxShadow = `inset var(--theme-color) 0 0 ${t}px 2px`;
-            this.squares[p1.x][p1.y].style.boxShadow = `inset var(--theme-color) 0 0 ${t}px 2px`;
+            this.squares[p0.x][p0.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
+            this.squares[p1.x][p1.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
         }, 0);
+
         
         this.args = this.GetCurrentFen();
     }
 
-    AddChessNotation(p0, p1) {
-        let piece = this.game.placement[p0.x][p0.y];
+    PromoteDialog(p, piece) {
+        const cover = document.createElement("div");
+        cover.className = "chess-cover";
+        this.content.appendChild(cover);
+
+        const container = document.createElement("div");
+        cover.appendChild(container);
+
+        const q = document.createElement("div");
+        q.style.backgroundImage = "url(chess/queen.svg)";
+        container.appendChild(q);
+
+        const r = document.createElement("div");
+        r.style.backgroundImage = "url(chess/rook.svg)";
+        container.appendChild(r);
+
+        const b = document.createElement("div");
+        b.style.backgroundImage = "url(chess/bishop.svg)";
+        container.appendChild(b);
+
+        const n = document.createElement("div");
+        n.style.backgroundImage = "url(chess/knight.svg)";
+        container.appendChild(n);
+
+        let color = this.GetPieceColor(p);
+
+        q.onclick = ()=>{
+            this.content.removeChild(cover);
+            this.game.placement[p.x][p.y] = color === "w" ? "Q" : "q";
+            piece.style.backgroundImage = "url(chess/queen.svg)";
+            this.args = this.GetCurrentFen();
+        };
+
+        r.onclick = ()=>{
+            this.content.removeChild(cover);
+            this.game.placement[p.x][p.y] = color === "w" ? "R" : "r";
+            piece.style.backgroundImage = "url(chess/rook.svg)";
+            this.args = this.GetCurrentFen();
+        };
+
+        b.onclick = ()=>{
+            this.content.removeChild(cover);
+            this.game.placement[p.x][p.y] = color === "w" ? "B" : "b";
+            piece.style.backgroundImage = "url(chess/bishop.svg)";
+            this.args = this.GetCurrentFen();
+        };
+
+        n.onclick = ()=>{
+            this.content.removeChild(cover);
+            this.game.placement[p.x][p.y] = color === "w" ? "N" : "n";
+            piece.style.backgroundImage = "url(chess/knight.svg)";
+            this.args = this.GetCurrentFen();
+        };
+    }
+
+    AddChessNotation(p0, p1, isCapture) {
+        let piece = this.game.placement[p1.x][p1.y];
         if (piece.toLowerCase() === "p") piece = "";
 
         const move = document.createElement("div");
         move.className = "chess-move";
 
-        if (this.game.placement[p1.x][p1.y] === null) {
-            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}-${String.fromCharCode(97+p1.x)}${8-p1.y}`;
-        } else {
+        if (isCapture)
             move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}x${String.fromCharCode(97+p1.x)}${8-p1.y}`;
-        }
+        else
+            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}-${String.fromCharCode(97+p1.x)}${8-p1.y}`;
 
         this.moveslist.appendChild(move);
     }
@@ -359,7 +421,7 @@ class Chess extends Window {
         this.indicators = [];
     }
 
-    GetLegalMoves(p) {
+    GetPseudolegalMoves(p) {
         let piece = this.game.placement[p.x][p.y];
         let color = this.GetPieceColor(p);
         let moves = [];
@@ -394,10 +456,6 @@ class Chess extends Window {
                         moves.push({ x: x, y: y - 1 });                    
                 }
 
-                //TODO: promote
-
-                return moves;
-
             } else {
                 if (this.game.placement[p.x][p.y + 1] === null)
                     moves.push({ x: p.x, y: p.y + 1 });
@@ -425,7 +483,6 @@ class Chess extends Window {
                         moves.push({ x: x, y: y + 1 });
                 }
                 
-                //TODO: promote
             }
         };
 
@@ -620,14 +677,15 @@ class Chess extends Window {
 
         this.ClearIndicators();
 
-        this.legalMoves = this.GetLegalMoves({ x: this.file0, y: this.rank0 });
+        this.legalMoves = this.GetPseudolegalMoves({ x: this.file0, y: this.rank0 });
         for (let i = 0; i < this.legalMoves.length; i++) {
             const indicator = document.createElement("div");
             indicator.classList = "chess-move-indicator";
             this.indicators.push(indicator);
             this.squares[this.legalMoves[i].x][this.legalMoves[i].y].appendChild(indicator);
 
-            if (this.game.placement[this.legalMoves[i].x][this.legalMoves[i].y] !== null) {
+            if (this.game.placement[this.legalMoves[i].x][this.legalMoves[i].y] !== null ||
+                this.game.placement[this.file0][this.rank0].toLowerCase() === "p" && this.file0 !== this.legalMoves[i].x) {
                 indicator.style.width  = "70%";
                 indicator.style.height = "70%";
                 indicator.style.margin = "15%";
