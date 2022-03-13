@@ -72,6 +72,10 @@
     background-color: rgb(84,84,84);
 }
 
+.chess-move:active {
+    background-color: rgb(88,88,88);
+}
+
 .chess-cover {
     background-color: rgba(64,64,64,.4);
     position: absolute;

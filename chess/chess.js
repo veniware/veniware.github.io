@@ -17,7 +17,7 @@ class Chess extends Window {
             move    : new Audio("chess/move.webm"),
             capture : new Audio("chess/capture.webm"),
             check   : new Audio("chess/check.webm"),
-            illegal : new Audio("chess/illegal.webm"),
+            illegal : new Audio("chess/illegal.webm")
         };
 
         this.board = document.createElement("div");
@@ -49,8 +49,8 @@ class Chess extends Window {
             for (let x = 0; x < 8; x++) {
                 const square = document.createElement("div");
                 square.className = "chess-square";
-                square.style.left = x * 100 / 8 + "%";
-                square.style.top = y * 100 / 8 + "%";
+                square.style.left = x * 12.5 + "%";
+                square.style.top = y * 12.5 + "%";
                 square.style.backgroundColor = (x + y) % 2 === 0 ? "rgb(112,112,112)" : "rgb(88,88,88)";
                 this.board.appendChild(square);
                 this.squares[x][y] = square;
@@ -65,7 +65,7 @@ class Chess extends Window {
             coord_f.innerHTML = 8-i;
             coord_f.style.color = i % 2 === 0 ? "rgb(84,84,84)" : "rgb(108,108,108)";
             coord_f.style.left = "0";
-            coord_f.style.top = i * 100 / 8 + "%";
+            coord_f.style.top = i * 12.5 + "%";
             this.board.appendChild(coord_f);
 
             const coord_r = document.createElement("div");
@@ -78,11 +78,6 @@ class Chess extends Window {
             this.board.appendChild(coord_r);
         }
         
-        if (this.args)
-            this.LoadFen(this.args);
-        else 
-            this.LoadFen(FEN_START);
-
         this.sidepanel = document.createElement("div");
         this.sidepanel.className = "chess-sidepanel";
         this.content.appendChild(this.sidepanel);
@@ -91,6 +86,11 @@ class Chess extends Window {
         this.moveslist.className = "chess-moveslist";
         this.sidepanel.appendChild(this.moveslist);
 
+        if (this.args)
+            this.LoadFen(this.args);
+        else 
+            this.LoadFen(FEN_START);
+            
         setTimeout(() => { this.AfterResize(); }, ANIM_DURATION);
         setTimeout(() => { this.AfterResize(); }, 1000);
     }
@@ -126,33 +126,6 @@ class Chess extends Window {
         this.board.style.top = (h - min) / 2 + "px";
     }
 
-    AddPiece(type, position) {
-        this.game.placement[position.x][position.y] = type;
-
-        const piece = document.createElement("div");
-        piece.className = "chess-piece";
-
-        switch (type.toLowerCase()) {
-            case "k": piece.style.backgroundImage = "url(chess/king.svg)"; break;
-            case "q": piece.style.backgroundImage = "url(chess/queen.svg)"; break;
-            case "r": piece.style.backgroundImage = "url(chess/rook.svg)"; break;
-            case "n": piece.style.backgroundImage = "url(chess/knight.svg)"; break;
-            case "b": piece.style.backgroundImage = "url(chess/bishop.svg)"; break;
-            case "p": piece.style.backgroundImage = "url(chess/pawn.svg)"; break;
-        }
-
-        piece.style.left = position.x * 12.5 + "%";
-        piece.style.top = position.y * 12.5 + "%";
-
-        if (type === type.toUpperCase())
-            piece.style.filter = "invert(1) brightness(.9)";
-
-        piece.onmousedown = event => this.Piece_mousedown(event, false);
-        piece.ontouchstart = event => this.Piece_mousedown(event, true);
-
-        this.board.appendChild(piece);
-    }
-
     LoadFen(notation) {
         //clear all pieces
         const pieces = this.board.querySelectorAll(".chess-piece");
@@ -170,19 +143,25 @@ class Chess extends Window {
 
         let position = { x: 0, y: 0 };
         for (let i = 0; i < placement.length; i++) {
-            if (placement[i] == "/") {
+            let target = placement[i];
+            if (target === "/") {
                 position.x = 0;
                 position.y += 1;
                 continue;
             }
 
-            if (!isNaN(placement[i])) {
-                position.x += parseInt(placement[i]);
+            if (!isNaN(target)) {
+                position.x += parseInt(target);
                 continue;
             }
 
-            this.AddPiece(placement[i], position);
-            this.game.placement[position.x][position.y] = placement[i];
+            if (position.y === 0 && target === "P") //auto-promote
+                target = "Q";
+            else if (position.y === 7 && target === "p")
+                target = "q";
+
+            this.AddPiece(target, position);
+            this.game.placement[position.x][position.y] = target;
             position.x += 1;
         }
 
@@ -228,11 +207,45 @@ class Chess extends Window {
 
         return notaion;
     }
+    
+    AddPiece(type, position) {
+        this.game.placement[position.x][position.y] = type;
 
-    MovePiece(p0, p1) {
+        const piece = document.createElement("div");
+        piece.className = "chess-piece";
+        
+        switch (type.toLowerCase()) {
+            case "k": piece.style.backgroundImage = "url(chess/king.svg)"; break;
+            case "q": piece.style.backgroundImage = "url(chess/queen.svg)"; break;
+            case "r": piece.style.backgroundImage = "url(chess/rook.svg)"; break;
+            case "n": piece.style.backgroundImage = "url(chess/knight.svg)"; break;
+            case "b": piece.style.backgroundImage = "url(chess/bishop.svg)"; break;
+            case "p": piece.style.backgroundImage = "url(chess/pawn.svg)"; break;
+        }
+        
+        piece.style.left = position.x * 12.5 + "%";
+        piece.style.top = position.y * 12.5 + "%";
+
+        piece.setAttribute("p", `${position.x}${position.y}`);
+
+        if (type === type.toUpperCase())
+            piece.style.filter = "invert(1) brightness(.9)";
+
+        piece.onmousedown = event => this.Piece_mousedown(event, false);
+        piece.ontouchstart = event => this.Piece_mousedown(event, true);
+
+        this.board.appendChild(piece);
+    }
+
+    PlayMove(p0, p1, element) {
         if (p0.x === p1.x && p0.y === p1.y) return;
 
         let isCapture = false;
+
+        const pieces = Array.from(this.board.querySelectorAll(".chess-piece"));
+        
+        if (!element)
+            element = pieces.find(piece => piece.getAttribute("p")[0] == p0.x && piece.getAttribute("p")[1] == p0.y);
 
         if (this.game.placement[p0.x][p0.y].toLowerCase() === "p" && Math.abs(p0.y - p1.y) === 2) { //en passant flag
             this.game.enpassant = String.fromCharCode(97 + p1.x) + (8 - p1.y);
@@ -244,11 +257,9 @@ class Chess extends Window {
             this.game.placement[p1.x][p0.y] = null;
             isCapture = true;
 
-            const pieces = this.board.querySelectorAll(".chess-piece");
-            for (const element of pieces)
-                if (element.style.left === p1.x * 12.5 + "%" &&
-                    element.style.top === p0.y * 12.5 + "%") {
-                    this.board.removeChild(element);
+            for (const piece of pieces)
+                if (piece.style.left === p1.x * 12.5 + "%" && piece.style.top === p0.y * 12.5 + "%") {
+                    this.board.removeChild(piece);
                     break;
                 }
         }
@@ -273,8 +284,6 @@ class Chess extends Window {
                 this.game.placement[7][0] === null;
             }
         }
-
-        const pieces = Array.from(this.board.querySelectorAll(".chess-piece"));
         
         if (this.game.placement[p0.x][p0.y] === "k" && Math.abs(p0.x - p1.x) === 2) { //black castling
             if (p0.x - p1.x === 2) { //queenside
@@ -311,10 +320,10 @@ class Chess extends Window {
         }
 
         if (this.game.placement[p1.x][p1.y] !== null) { //capture a piece
-            const captured = pieces.find(ele => ele !== this.selected && ele.style.left === p1.x * 12.5 + "%" && ele.style.top === p1.y * 12.5 + "%");
+            const captured = pieces.find(ele => ele !== element && ele.style.left === p1.x * 12.5 + "%" && ele.style.top === p1.y * 12.5 + "%");
             if (captured) this.board.removeChild(captured);
-            this.sounds.capture.play();
             isCapture = true;
+            this.sounds.capture.play();
         } else {
             this.sounds.move.play();
         }
@@ -322,13 +331,17 @@ class Chess extends Window {
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
         this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
-        this.game.lastmove = [p0.x, p0.y, p1.x, p1.y];
+        
+        element.style.left = p1.x * 12.5 + "%";
+        element.style.top = p1.y * 12.5 + "%";
+
+        element.setAttribute("p", `${p1.x}${p1.y}`);
 
         if (this.game.placement[p1.x][p1.y] === "P" && p1.y === 0 || 
             this.game.placement[p1.x][p1.y] === "p" && p1.y === 7) { //promote
             this.PromoteDialog(p1, this.selected);
         }
-
+        
         this.AddChessNotation(p0, p1, isCapture);
 
         for (let y = 0; y < 8; y++)
@@ -340,11 +353,10 @@ class Chess extends Window {
             this.squares[p1.x][p1.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
         }, 0);
 
-        
         this.args = this.GetCurrentFen();
     }
 
-    PromoteDialog(p, piece) {
+    PromoteDialog(p, element) {
         const cover = document.createElement("div");
         cover.className = "chess-cover";
         this.content.appendChild(cover);
@@ -370,32 +382,37 @@ class Chess extends Window {
 
         let color = this.GetPieceColor(p);
 
+        const updateMoveList = (l)=>{
+            //TODO:
+            this.args = this.GetCurrentFen();
+        };
+
         q.onclick = ()=>{
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "Q" : "q";
-            piece.style.backgroundImage = "url(chess/queen.svg)";
-            this.args = this.GetCurrentFen();
+            element.style.backgroundImage = "url(chess/queen.svg)";
+            updateMoveList("Q");
         };
 
         r.onclick = ()=>{
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "R" : "r";
-            piece.style.backgroundImage = "url(chess/rook.svg)";
-            this.args = this.GetCurrentFen();
+            element.style.backgroundImage = "url(chess/rook.svg)";
+            updateMoveList("R");
         };
 
         b.onclick = ()=>{
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "B" : "b";
-            piece.style.backgroundImage = "url(chess/bishop.svg)";
-            this.args = this.GetCurrentFen();
+            element.style.backgroundImage = "url(chess/bishop.svg)";
+            updateMoveList("B");
         };
 
         n.onclick = ()=>{
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "N" : "n";
-            piece.style.backgroundImage = "url(chess/knight.svg)";
-            this.args = this.GetCurrentFen();
+            element.style.backgroundImage = "url(chess/knight.svg)";
+            updateMoveList("N");
         };
     }
 
@@ -403,15 +420,18 @@ class Chess extends Window {
         let piece = this.game.placement[p1.x][p1.y];
         if (piece.toLowerCase() === "p") piece = "";
 
-        const move = document.createElement("div");
-        move.className = "chess-move";
+        const divMove = document.createElement("div");
+        divMove.className = "chess-move";
+
+        let move = "", label = "";
 
         if (isCapture)
-            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}x${String.fromCharCode(97+p1.x)}${8-p1.y}`;
+            move = `${String.fromCharCode(97+p0.x)}${8-p0.y}x${String.fromCharCode(97+p1.x)}${8-p1.y}`;
         else
-            move.innerHTML = `${piece.toUpperCase()}${String.fromCharCode(97+p0.x)}${8-p0.y}-${String.fromCharCode(97+p1.x)}${8-p1.y}`;
+            move = `${String.fromCharCode(97+p0.x)}${8-p0.y}-${String.fromCharCode(97+p1.x)}${8-p1.y}`;
 
-        this.moveslist.appendChild(move);
+        divMove.innerHTML = move;
+        this.moveslist.appendChild(divMove);
     }
 
     ClearIndicators() {
@@ -420,64 +440,70 @@ class Chess extends Window {
 
         this.indicators = [];
     }
+    
+    GetPieceColor(p) {
+        if (this.game.placement[p.x][p.y] === null) return null;
+        if (this.game.placement[p.x][p.y] === this.game.placement[p.x][p.y].toLowerCase()) return "b";
+        return "w";
+    }
 
-    GetPseudolegalMoves(p) {
-        let piece = this.game.placement[p.x][p.y];
+    GetPseudolegalMoves(p, game) {
+        let piece = game.placement[p.x][p.y];
         let color = this.GetPieceColor(p);
         let moves = [];
 
-        if (color !== this.game.activecolor) return moves;
+        if (color !== game.activecolor) return moves;
 
         const pawnMoves = () => {
             if (color === "w") {
-                if (this.game.placement[p.x][p.y - 1] === null)
+                if (game.placement[p.x][p.y - 1] === null)
                     moves.push({ x: p.x, y: p.y - 1 });
 
                 if (p.y === 6 &&
-                    this.game.placement[p.x][p.y - 1] === null &&
-                    this.game.placement[p.x][p.y - 2] === null)
+                    game.placement[p.x][p.y - 1] === null &&
+                    game.placement[p.x][p.y - 2] === null)
                     moves.push({ x: p.x, y: p.y - 2 });
 
                 if (p.x > 0 &&
-                    this.game.placement[p.x - 1][p.y - 1] !== null &&
+                    game.placement[p.x - 1][p.y - 1] !== null &&
                     this.GetPieceColor({ x: p.x - 1, y: p.y - 1 }) !== color)
                     moves.push({ x: p.x - 1, y: p.y - 1 });
 
                 if (p.x < 7 &&
-                    this.game.placement[p.x + 1][p.y - 1] !== null &&
+                    game.placement[p.x + 1][p.y - 1] !== null &&
                     this.GetPieceColor({ x: p.x + 1, y: p.y - 1 }) !== color)
                     moves.push({ x: p.x + 1, y: p.y - 1 });
 
-                if (this.game.enpassant !== "-") { //en passant
-                    let x = this.game.enpassant.charCodeAt(0) - 97;
-                    let y = 8 - parseInt(this.game.enpassant[1]);
+                if (game.enpassant !== "-") { //en passant
+                    let x = game.enpassant.charCodeAt(0) - 97;
+                    let y = 8 - parseInt(game.enpassant[1]);
 
                     if (y === p.y && Math.abs(x - p.x) === 1)
-                        moves.push({ x: x, y: y - 1 });                    
+                        moves.push({ x: x, y: y - 1 });
                 }
 
             } else {
-                if (this.game.placement[p.x][p.y + 1] === null)
+                if (game.placement[p.x][p.y + 1] === null)
                     moves.push({ x: p.x, y: p.y + 1 });
 
                 if (p.y === 1 &&
-                    this.game.placement[p.x][p.y + 1] === null &&
-                    this.game.placement[p.x][p.y + 2] === null)
+                    game.placement[p.x][p.y + 1] === null &&
+                    game.placement[p.x][p.y + 2] === null)
                     moves.push({ x: p.x, y: p.y + 2 });
 
                 if (p.x > 0 &&
-                    this.game.placement[p.x - 1][p.y + 1] !== null &&
+                    game.placement[p.x - 1][p.y + 1] !== null &&
                     this.GetPieceColor({ x: p.x - 1, y: p.y + 1 }) !== color)
                     moves.push({ x: p.x - 1, y: p.y + 1 });
 
                 if (p.x < 7 &&
-                    this.game.placement[p.x + 1][p.y + 1] !== null &&
+                    game.placement[p.x + 1][p.y + 1] !== null &&
                     this.GetPieceColor({ x: p.x + 1, y: p.y + 1 }) !== color)
                     moves.push({ x: p.x + 1, y: p.y + 1 });
 
-                if (this.game.enpassant !== "-") { //en passant
-                    let x = this.game.enpassant.charCodeAt(0) - 97;
-                    let y = 8 - parseInt(this.game.enpassant[1]);
+                if (game.enpassant !== "-") { //en passant
+                    let x = game.enpassant.charCodeAt(0) - 97;
+                    let y = 8 - parseInt(game.enpassant[1]);
 
                     if (y === p.y && Math.abs(x - p.x) === 1)
                         moves.push({ x: x, y: y + 1 });
@@ -640,10 +666,22 @@ class Chess extends Window {
         return moves;
     }
 
-    GetPieceColor(p) {
-        if (this.game.placement[p.x][p.y] === null) return null;
-        if (this.game.placement[p.x][p.y] === this.game.placement[p.x][p.y].toLowerCase()) return "b";
-        return "w";
+    GetLegalMoves(p) {
+        let pseudolegal = this.GetPseudolegalMoves(p, this.game);
+        let legal = [];
+
+        for (let i = 0; i < pseudolegal.length; i++) {
+            let controlledArea = [];
+            for (let j = 0; j < 8; j++) {
+                controlledArea.push([[false], [false], [false], [false], [false],[false], [false], [false]]);
+            }
+
+            //TODO:
+            
+            legal.push(pseudolegal[i]);
+        }
+        
+        return legal;
     }
 
     Piece_mousedown(event, isTouch) {
@@ -677,7 +715,7 @@ class Chess extends Window {
 
         this.ClearIndicators();
 
-        this.legalMoves = this.GetPseudolegalMoves({ x: this.file0, y: this.rank0 });
+        this.legalMoves = this.GetLegalMoves({ x: this.file0, y: this.rank0 });
         for (let i = 0; i < this.legalMoves.length; i++) {
             const indicator = document.createElement("div");
             indicator.classList = "chess-move-indicator";
@@ -700,7 +738,7 @@ class Chess extends Window {
 
         if (this.selected) {
             let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x - this.x0;
-            let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY -  this.board.getBoundingClientRect().height / 8 - this.y0 : this.selectedPosition.y + event.y - this.y0;
+            let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY - this.board.getBoundingClientRect().height / 8 - this.y0 : this.selectedPosition.y + event.y - this.y0;
 
             x = Math.max(x, -this.board.getBoundingClientRect().width / 16);
             x = Math.min(x, this.board.getBoundingClientRect().width - this.board.getBoundingClientRect().height / 16);
@@ -730,14 +768,13 @@ class Chess extends Window {
 
             let isLegal = this.legalMoves.find(move => move.x === file1 && move.y === rank1);
             if (isLegal) {
-                this.selected.style.left = file1 * 100 / 8 + "%";
-                this.selected.style.top = rank1 * 100 / 8 + "%";
-
-                this.MovePiece({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 });
+                //this.selected.style.left = file1 * 12.5 + "%";
+                //this.selected.style.top = rank1 * 12.5 + "%";
+                this.PlayMove({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected, true);
 
             } else { //undo
-                this.selected.style.left = this.file0 * 100 / 8 + "%";
-                this.selected.style.top = this.rank0 * 100 / 8 + "%";
+                this.selected.style.left = this.file0 * 12.5 + "%";
+                this.selected.style.top = this.rank0 * 12.5 + "%";
                 //this.sounds.illegal.play();
             }
             
