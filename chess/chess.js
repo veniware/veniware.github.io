@@ -39,8 +39,8 @@ class Chess extends Window {
             activecolor: "w",
             castling: "KQkq",
             enpassant: "-",
-            //halfmove: 0,
-            //fullmove: 1,
+            halfmove: 0,
+            fullmove: 1,
             lastmove: null
         };
 
@@ -169,6 +169,18 @@ class Chess extends Window {
         this.game.activecolor = array[1];
         this.game.castling = array[2];
         this.game.enpassant = array[3];
+        this.game.lastmove = array[6];
+
+        for (let y = 0; y < 8; y++)
+            for (let x = 0; x < 8; x++)
+                this.squares[x][y].style.boxShadow = "none";
+
+        if (array.length > 6) { //mark last move
+            let p0 = {x: array[6].charCodeAt(0) - 97, y: 8 - parseInt(array[6][1]) };
+            let p1 = {x: array[6].charCodeAt(2) - 97, y: 8 - parseInt(array[6][3]) };
+            this.squares[p0.x][p0.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
+            this.squares[p1.x][p1.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
+        }
     }
 
     GetCurrentFen() {
@@ -204,7 +216,9 @@ class Chess extends Window {
         notaion += " " + this.game.activecolor;
         notaion += " " + this.game.castling;
         notaion += " " + this.game.enpassant;
-
+        notaion += " " + this.game.halfmove;
+        notaion += " " + this.game.fullmove;
+        notaion += " " + this.game.lastmove;
         return notaion;
     }
     
@@ -353,6 +367,7 @@ class Chess extends Window {
             this.squares[p1.x][p1.y].style.boxShadow = "inset var(--theme-color) 0 0 2px 2px";
         }, 0);
 
+        this.game.lastmove = `${String.fromCharCode(97+p0.x)}${8-p0.y}${String.fromCharCode(97+p1.x)}${8-p1.y}`;
         this.args = this.GetCurrentFen();
     }
 
@@ -380,7 +395,7 @@ class Chess extends Window {
         n.style.backgroundImage = "url(chess/knight.svg)";
         container.appendChild(n);
 
-        let color = this.GetPieceColor(p);
+        let color = this.GetPieceColor(p, this.game);
 
         const updateMoveList = (l)=>{
             //TODO:
@@ -441,18 +456,16 @@ class Chess extends Window {
         this.indicators = [];
     }
     
-    GetPieceColor(p) {
-        if (this.game.placement[p.x][p.y] === null) return null;
-        if (this.game.placement[p.x][p.y] === this.game.placement[p.x][p.y].toLowerCase()) return "b";
+    GetPieceColor(p, game) {
+        if (game.placement[p.x][p.y] === null) return null;
+        if (game.placement[p.x][p.y] === game.placement[p.x][p.y].toLowerCase()) return "b";
         return "w";
     }
 
     GetPseudolegalMoves(p, game) {
         let piece = game.placement[p.x][p.y];
-        let color = this.GetPieceColor(p);
+        let color = this.GetPieceColor(p, game);
         let moves = [];
-
-        if (color !== game.activecolor) return moves;
 
         const pawnMoves = () => {
             if (color === "w") {
@@ -466,12 +479,12 @@ class Chess extends Window {
 
                 if (p.x > 0 &&
                     game.placement[p.x - 1][p.y - 1] !== null &&
-                    this.GetPieceColor({ x: p.x - 1, y: p.y - 1 }) !== color)
+                    this.GetPieceColor({ x: p.x - 1, y: p.y - 1 }, game) !== color)
                     moves.push({ x: p.x - 1, y: p.y - 1 });
 
                 if (p.x < 7 &&
                     game.placement[p.x + 1][p.y - 1] !== null &&
-                    this.GetPieceColor({ x: p.x + 1, y: p.y - 1 }) !== color)
+                    this.GetPieceColor({ x: p.x + 1, y: p.y - 1 }, game) !== color)
                     moves.push({ x: p.x + 1, y: p.y - 1 });
 
                 if (game.enpassant !== "-") { //en passant
@@ -493,12 +506,12 @@ class Chess extends Window {
 
                 if (p.x > 0 &&
                     game.placement[p.x - 1][p.y + 1] !== null &&
-                    this.GetPieceColor({ x: p.x - 1, y: p.y + 1 }) !== color)
+                    this.GetPieceColor({ x: p.x - 1, y: p.y + 1 }, game) !== color)
                     moves.push({ x: p.x - 1, y: p.y + 1 });
 
                 if (p.x < 7 &&
                     game.placement[p.x + 1][p.y + 1] !== null &&
-                    this.GetPieceColor({ x: p.x + 1, y: p.y + 1 }) !== color)
+                    this.GetPieceColor({ x: p.x + 1, y: p.y + 1 }, game) !== color)
                     moves.push({ x: p.x + 1, y: p.y + 1 });
 
                 if (game.enpassant !== "-") { //en passant
@@ -513,7 +526,7 @@ class Chess extends Window {
         };
 
         const knightMoves = () => {
-            let offset = [
+            const offset = [
                 { x: -2, y: -1 },
                 { x: -2, y: 1 },
                 { x: -1, y: -2 },
@@ -527,7 +540,7 @@ class Chess extends Window {
             for (let i = 0; i < offset.length; i++) {
                 let x = p.x + offset[i].x, y = p.y + offset[i].y;
                 if (x < 0 || x > 7 || y < 0 || y > 7) continue;
-                if (this.GetPieceColor({ x: x, y: y }) === color) continue;
+                if (this.GetPieceColor({ x: x, y: y }, game) === color) continue;
                 moves.push({ x: x, y: y });
             }
         };
@@ -535,55 +548,55 @@ class Chess extends Window {
         const bishopMoves = () => {
             for (let i = 1; i < 8; i++) {
                 if (p.x - i < 0 || p.y - i < 0) break;
-                if (this.GetPieceColor({ x: p.x - i, y: p.y - i }) === color) break;
+                if (this.GetPieceColor({ x: p.x - i, y: p.y - i }, game) === color) break;
                 moves.push({ x: p.x - i, y: p.y - i });
-                if (this.game.placement[p.x - i][p.y - i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y - i }) !== color) break;
+                if (game.placement[p.x - i][p.y - i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y - i }, game) !== color) break;
             }
             for (let i = 1; i < 8; i++) {
                 if (p.x - i < 0 || p.y + i > 7) break;
-                if (this.GetPieceColor({ x: p.x - i, y: p.y + i }) === color) break;
+                if (this.GetPieceColor({ x: p.x - i, y: p.y + i }, game) === color) break;
                 moves.push({ x: p.x - i, y: p.y + i });
-                if (this.game.placement[p.x - i][p.y + i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y + i }) !== color) break;
+                if (game.placement[p.x - i][p.y + i] !== null && this.GetPieceColor({ x: p.x - i, y: p.y + i }, game) !== color) break;
             }
             for (let i = 1; i < 8; i++) {
                 if (p.x + i > 7 || p.y - i < 0) break;
-                if (this.GetPieceColor({ x: p.x + i, y: p.y - i }) === color) break;
+                if (this.GetPieceColor({ x: p.x + i, y: p.y - i }, game) === color) break;
                 moves.push({ x: p.x + i, y: p.y - i });
-                if (this.game.placement[p.x + i][p.y - i] !== null && this.GetPieceColor({ x: p.x + i, y: p.y - i }) !== color) break;
+                if (game.placement[p.x + i][p.y - i] !== null && this.GetPieceColor({ x: p.x + i, y: p.y - i }, game) !== color) break;
             }
             for (let i = 1; i < 8; i++) {
                 if (p.x + i > 7 || p.y + i > 7) break;
-                if (this.GetPieceColor({ x: p.x + i, y: p.y + i }) === color) break;
+                if (this.GetPieceColor({ x: p.x + i, y: p.y + i }, game) === color) break;
                 moves.push({ x: p.x + i, y: p.y + i });
-                if (this.game.placement[p.x + i][p.y + i] !== null && this.GetPieceColor({ x: p.x + i, y: p.y + i }) !== color) break;
+                if (game.placement[p.x + i][p.y + i] !== null && this.GetPieceColor({ x: p.x + i, y: p.y + i }, game) !== color) break;
             }
         };
 
         const rockMoves = () => {
             for (let i = p.x - 1; i > -1; i--) {
-                if (this.GetPieceColor({ x: i, y: p.y }) === color) break;
+                if (this.GetPieceColor({ x: i, y: p.y }, game) === color) break;
                 moves.push({ x: i, y: p.y });
-                if (this.game.placement[i][p.y] !== null && this.GetPieceColor({ x: i, y: p.y }) !== color) break;
+                if (game.placement[i][p.y] !== null && this.GetPieceColor({ x: i, y: p.y }, game) !== color) break;
             }
             for (let i = p.x + 1; i < 8; i++) {
-                if (this.GetPieceColor({ x: i, y: p.y }) === color) break;
+                if (this.GetPieceColor({ x: i, y: p.y }, game) === color) break;
                 moves.push({ x: i, y: p.y });
-                if (this.game.placement[i][p.y] !== null && this.GetPieceColor({ x: i, y: p.y }) !== color) break;
+                if (game.placement[i][p.y] !== null && this.GetPieceColor({ x: i, y: p.y }, game) !== color) break;
             }
             for (let i = p.y - 1; i > -1; i--) {
-                if (this.GetPieceColor({ x: p.x, y: i }) === color) break;
+                if (this.GetPieceColor({ x: p.x, y: i }, game) === color) break;
                 moves.push({ x: p.x, y: i });
-                if (this.game.placement[p.x][i] !== null && this.GetPieceColor({ x: p.x, y: i }) !== color) break;
+                if (game.placement[p.x][i] !== null && this.GetPieceColor({ x: p.x, y: i }, game) !== color) break;
             }
             for (let i = p.y + 1; i < 8; i++) {
-                if (this.GetPieceColor({ x: p.x, y: i }) === color) break;
+                if (this.GetPieceColor({ x: p.x, y: i }, game) === color) break;
                 moves.push({ x: p.x, y: i });
-                if (this.game.placement[p.x][i] !== null && this.GetPieceColor({ x: p.x, y: i }) !== color) break;
+                if (game.placement[p.x][i] !== null && this.GetPieceColor({ x: p.x, y: i }, game) !== color) break;
             }
         };
 
         const kingMoves = () => {
-            let offset = [
+            const offset = [
                 { x: -1, y: -1 },
                 { x: -1, y: 0 },
                 { x: -1, y: 1 },
@@ -597,40 +610,39 @@ class Chess extends Window {
             for (let i = 0; i < offset.length; i++) {
                 let x = p.x + offset[i].x, y = p.y + offset[i].y;
                 if (x < 0 || x > 7 || y < 0 || y > 7) continue;
-                if (this.GetPieceColor({ x: x, y: y }) === color) continue;
+                if (this.GetPieceColor({ x: x, y: y }, game) === color) continue;
                 moves.push({ x: x, y: y });
             }
 
-             //TODO: castling if in check
             if (color === "b") {
-                if (this.game.castling.indexOf("q") > -1 &&
-                    this.game.placement[0][0] === "r" &&
-                    this.game.placement[1][0] === null &&
-                    this.game.placement[2][0] === null &&
-                    this.game.placement[3][0] === null) { //black queenside castling
+                if (game.castling.indexOf("q") > -1 &&
+                    game.placement[0][0] === "r" &&
+                    game.placement[1][0] === null &&
+                    game.placement[2][0] === null &&
+                    game.placement[3][0] === null) { //black queenside castling
                     moves.push({ x: p.x - 2, y: p.y });
                 }
 
-                if (this.game.castling.indexOf("k") > -1 &&
-                    this.game.placement[7][0] === "r" &&
-                    this.game.placement[5][0] === null &&
-                    this.game.placement[6][0] === null) { //black kingside castling
+                if (game.castling.indexOf("k") > -1 &&
+                    game.placement[7][0] === "r" &&
+                    game.placement[5][0] === null &&
+                    game.placement[6][0] === null) { //black kingside castling
                     moves.push({ x: p.x + 2, y: p.y });
                 }
 
             } else if (color === "w") {
-                if (this.game.castling.indexOf("Q") > -1 &&
-                    this.game.placement[0][7] === "R" &&
-                    this.game.placement[1][7] === null &&
-                    this.game.placement[2][7] === null &&
-                    this.game.placement[3][7] === null) { //white queenside castling
+                if (game.castling.indexOf("Q") > -1 &&
+                    game.placement[0][7] === "R" &&
+                    game.placement[1][7] === null &&
+                    game.placement[2][7] === null &&
+                    game.placement[3][7] === null) { //white queenside castling
                     moves.push({ x: p.x - 2, y: p.y });
                 }
 
-                if (this.game.castling.indexOf("K") > -1 &&
-                    this.game.placement[7][7] === "R" &&
-                    this.game.placement[5][7] === null &&
-                    this.game.placement[6][7] === null) { //white kingside castling
+                if (game.castling.indexOf("K") > -1 &&
+                    game.placement[7][7] === "R" &&
+                    game.placement[5][7] === null &&
+                    game.placement[6][7] === null) { //white kingside castling
                     moves.push({ x: p.x + 2, y: p.y });
                 }
             }
@@ -666,22 +678,127 @@ class Chess extends Window {
         return moves;
     }
 
-    GetLegalMoves(p) {
-        let pseudolegal = this.GetPseudolegalMoves(p, this.game);
+    GetLegalMoves(p, game) {
+        const piece = game.placement[p.x][p.y];
+        const color = this.GetPieceColor(p, game);
+        const enemyColor = game.activecolor === "w" ? "b" : "w";
+        
+        const enemyControl = this.GetControlledSquares(game, enemyColor);
+        const pseudolegal = this.GetPseudolegalMoves(p, game);
         let legal = [];
+        
+        let kingsPosition = null;
+        let target = this.game.activecolor === "w" ? "K" : "k";
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                if (this.game.placement[x][y] === target) {
+                    kingsPosition = { x: x, y: y };
+                    break;
+                }
+            }   
+            if (kingsPosition) break;
+        }
 
         for (let i = 0; i < pseudolegal.length; i++) {
-            let controlledArea = [];
-            for (let j = 0; j < 8; j++) {
-                controlledArea.push([[false], [false], [false], [false], [false],[false], [false], [false]]);
+            if (piece.toLowerCase() === "k") {                
+                if (enemyControl[pseudolegal[i].x][pseudolegal[i].y]) { //king is moving into a check
+                    continue;
+                }
+
+                if (color === "w") {
+                    if (Math.abs(p.x-pseudolegal[i].x) === 2 && enemyControl[4][7]) //kcastling while in check
+                        continue;
+                    if (p.x-pseudolegal[i].x === -2 && enemyControl[5][7] || p.x-pseudolegal[i].x === 2 && enemyControl[3][7]) //castling through check
+                        continue;
+                }
+
+                if (color === "b") {
+                    if (Math.abs(p.x-pseudolegal[i].x) === 2 && enemyControl[4][0]) //castling while in check
+                        continue;
+                    if (p.x-pseudolegal[i].x === -2 && enemyControl[5][0] || p.x-pseudolegal[i].x === 2 && enemyControl[3][0]) //castling through check
+                        continue;                    
+                }
             }
 
-            //TODO:
+            let clone = {
+                fen        : null,
+                placement  : JSON.parse(JSON.stringify(this.game.placement)),
+                activecolor: this.game.activecolor === "w" ? "b" : "w",
+                castling   : this.game.castling,
+                enpassant  : this.game.enpassant,
+                halfmove   : null,
+                fullmove   : null,
+                lastmove   : null
+            };
+            clone.placement[pseudolegal[i].x][pseudolegal[i].y] = clone.placement[p.x][p.y];
+            clone.placement[p.x][p.y] = null;
+            
+            if (this.IsInCheck(clone, color)) {
+                continue;
+            }
             
             legal.push(pseudolegal[i]);
         }
         
         return legal;
+    }
+
+    GetControlledSquares(game, color) {
+        let area = [];
+        for (let i = 0; i < 8; i++) {
+            area.push([false, false, false, false, false, false, false, false]);
+        }
+
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+
+                if (game.placement[x][y] === null) continue;
+            
+                let p = { x: x, y: y };
+                let piece = game.placement[x][y];
+                let pieceColor = this.GetPieceColor(p, game);
+            
+                if (color !== pieceColor) continue;
+                
+                if (piece.toLowerCase() === "p") { //count only captures for pawns
+                    if (pieceColor === "w") {                            
+                        if (x > 0) area[x-1][y-1] = true;
+                        if (x < 7) area[x+1][y-1] = true;
+                    } else {
+                        if (x > 0) area[x-1][y+1] = true;
+                        if (x < 7) area[x+1][y+1] = true;
+                    }
+
+                } else {
+                    let moves = this.GetPseudolegalMoves(p, game);
+                    for (let k = 0; k < moves.length; k++) {
+                        area[moves[k].x][moves[k].y] = true;
+                    }
+                }
+
+            }
+        }
+
+        return area;
+    }
+    
+    IsInCheck(game, color) {
+        const target = color === "w" ? "K" : "k";
+        const enemyColor = color === "w" ? "b" : "w";
+        let kingsPosition = null;
+        
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                if (game.placement[x][y] === target) {
+                    kingsPosition = { x: x, y: y };
+                    break;
+                }
+            }   
+            if (kingsPosition) break;
+        }
+
+        let control = this.GetControlledSquares(game, enemyColor);
+        return control[kingsPosition.x][kingsPosition.y];
     }
 
     Piece_mousedown(event, isTouch) {
@@ -707,15 +824,18 @@ class Chess extends Window {
         this.selected.style.zIndex = "1";
         this.selected.style.transition = "none";
 
+        let pieceColor = this.GetPieceColor({x:this.file0, y:this.rank0}, this.game);
+        if (pieceColor !== this.game.activecolor) return;
+
         if (isTouch) this.selected.style.transform = "scale(1.2)";
 
         this.board.style.cursor = "none";
-        if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+        if (pieceColor === this.game.activecolor)
             this.squares[this.file0][this.rank0].style.boxShadow = `inset rgba(192,192,192,.5) 0 0 0 ${this.board.getBoundingClientRect().width / 120}px`;
 
         this.ClearIndicators();
 
-        this.legalMoves = this.GetLegalMoves({ x: this.file0, y: this.rank0 });
+        this.legalMoves = this.GetLegalMoves({ x: this.file0, y: this.rank0 }, this.game);
         for (let i = 0; i < this.legalMoves.length; i++) {
             const indicator = document.createElement("div");
             indicator.classList = "chess-move-indicator";
@@ -768,9 +888,8 @@ class Chess extends Window {
 
             let isLegal = this.legalMoves.find(move => move.x === file1 && move.y === rank1);
             if (isLegal) {
-                //this.selected.style.left = file1 * 12.5 + "%";
-                //this.selected.style.top = rank1 * 12.5 + "%";
-                this.PlayMove({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected, true);
+                this.PlayMove({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected);
+                this.UpdateUi({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected);
 
             } else { //undo
                 this.selected.style.left = this.file0 * 12.5 + "%";
@@ -778,7 +897,7 @@ class Chess extends Window {
                 //this.sounds.illegal.play();
             }
             
-            if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+            if (this.GetPieceColor({x:this.file0, y:this.rank0}, this.game) === this.game.activecolor)
                 this.squares[this.file0][this.rank0].style.boxShadow = "none";
 
             this.legalMoves = [];
@@ -799,7 +918,7 @@ class Chess extends Window {
         this.selected.style.cursor = "inherit";
         this.selected = null;
 
-        if (this.GetPieceColor({x:this.file0, y:this.rank0}) === this.game.activecolor)
+        if (this.GetPieceColor({x:this.file0, y:this.rank0}, this.game) === this.game.activecolor)
             this.squares[this.file0][this.rank0].style.boxShadow = "none";
 
         this.board.style.cursor = "inherit";
