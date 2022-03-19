@@ -880,7 +880,7 @@ class Chess extends Window {
             file1 = Math.max(0, Math.min(7, file1));
             rank1 = Math.max(0, Math.min(7, rank1));
 
-            this.selected.style.transition = ".2s";
+            this.selected.style.transition = ".4s cubic-bezier(.2,.8,.3,1.2)";
             this.selected.style.transform = "none";
             this.selected.style.zIndex = "0";
 
@@ -909,7 +909,7 @@ class Chess extends Window {
     Board_mouseleave(event, isTouch) {
         if (!this.selected) return;
 
-        this.selected.style.transition = ".2s";
+        this.selected.style.transition = ".4s cubic-bezier(.2,.8,.3,1.2)";
         this.selected.style.left = this.selectedPosition.x * 100 / this.board.getBoundingClientRect().width + "%";
         this.selected.style.top = this.selectedPosition.y * 100 / this.board.getBoundingClientRect().height + "%";
         this.selected.style.transform = "none";
