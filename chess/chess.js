@@ -889,7 +889,6 @@ class Chess extends Window {
             let isLegal = this.legalMoves.find(move => move.x === file1 && move.y === rank1);
             if (isLegal) {
                 this.PlayMove({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected);
-                this.UpdateUi({ x: this.file0, y: this.rank0 }, { x: file1, y: rank1 }, this.selected);
 
             } else { //undo
                 this.selected.style.left = this.file0 * 12.5 + "%";
