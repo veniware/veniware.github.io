@@ -17,6 +17,7 @@
     height: 12.5%;
     background-size: contain;
     background-repeat: no-repeat;
+    transition: .4s cubic-bezier(.2,.8,.3,1.2);
 }
 
 .chess-move-indicator {

@@ -874,7 +874,7 @@ class Chess extends Window {
         if (this.selected) {
             let x = Math.min(Math.max(parseFloat(event.srcElement.style.left), 0), this.board.getBoundingClientRect().width);
             let y = Math.min(Math.max(parseFloat(event.srcElement.style.top), 0), this.board.getBoundingClientRect().height);
-            
+
             let file1 = Math.round(x * 8 / this.board.getBoundingClientRect().width);
             let rank1 = Math.round(y * 8 / this.board.getBoundingClientRect().height);
             file1 = Math.max(0, Math.min(7, file1));
