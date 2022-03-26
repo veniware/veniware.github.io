@@ -58,6 +58,7 @@ class Chess extends Window {
 
         this.legalMoves = [];
         this.indicators = [];
+        this.isFlipped = false;
 
         for (let i = 0; i < 8; i++) {
             const coord_f = document.createElement("div");
@@ -85,20 +86,30 @@ class Chess extends Window {
         this.moveslist = document.createElement("div");
         this.moveslist.className = "chess-moveslist";
         this.sidepanel.appendChild(this.moveslist);
-
-        if (this.args)
-            this.LoadFen(this.args);
-        else 
-            this.LoadFen(FEN_START);
             
         setTimeout(() => { this.AfterResize(); }, ANIM_DURATION);
         setTimeout(() => { this.AfterResize(); }, 1000);
+
+        this.Init();
+    }
+
+    Init() {
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("chess/chess.wasm"), go.importObject).then((result) => {
+            
+            if (this.args)
+                this.LoadFen(this.args);
+            else
+                this.LoadFen(FEN_START);
+
+            go.run(result.instance);
+        });
     }
 
     AfterResize() { //override
         let w = this.content.clientWidth;
         let h = this.content.clientHeight;
-        let min = Math.min(w, h) * .96;
+        let min = Math.min(w, h) * .95;
         let offset = 0;
 
         if (w > h && w - min > 250) {
@@ -124,6 +135,28 @@ class Chess extends Window {
         this.board.style.height = min + "px";
         this.board.style.left = (w - min) / 2 + offset + "px";
         this.board.style.top = (h - min) / 2 + "px";
+    }
+
+    FlipBoard() {
+        const lastTransition = this.board.style.transition;
+        
+        let transform = this.isFlipped ? "rotate(0)" : "rotate(180deg)";
+        this.board.style.transition = "0.4s";
+        this.board.style.transform = transform;
+        
+        const pieces = Array.from(this.board.querySelectorAll(".chess-piece"));
+        for (let i = 0; i < pieces.length; i++) {
+            pieces[i].style.transform = transform;
+        }
+        
+        const coord = Array.from(this.board.querySelectorAll(".chess-coord"));
+        for (let i = 0; i < coord.length; i++) {
+            coord[i].style.transform = transform;
+        }
+        
+        this.isFlipped = !this.isFlipped;
+
+        setTimeout(()=>{ this.board.style.transition = lastTransition }, 400);
     }
 
     LoadFen(notation) {
@@ -807,6 +840,10 @@ class Chess extends Window {
             return;
         }
 
+        if (isTouch && event.touches.length > 1) {
+            return;
+        }
+
         this.selected = event.srcElement;
         this.selectedPosition = {
             x: parseFloat(event.srcElement.style.left) * this.board.getBoundingClientRect().width / 100,
@@ -824,12 +861,13 @@ class Chess extends Window {
         this.selected.style.zIndex = "1";
         this.selected.style.transition = "none";
 
+        this.board.style.cursor = "none";
+        
         let pieceColor = this.GetPieceColor({x:this.file0, y:this.rank0}, this.game);
         if (pieceColor !== this.game.activecolor) return;
 
-        if (isTouch) this.selected.style.transform = "scale(1.2)";
+        if (isTouch) this.selected.style.transform = this.isFlipped ? "scale(1.2) rotate(180deg)" : "scale(1.2)";
 
-        this.board.style.cursor = "none";
         if (pieceColor === this.game.activecolor)
             this.squares[this.file0][this.rank0].style.boxShadow = `inset rgba(192,192,192,.5) 0 0 0 ${this.board.getBoundingClientRect().width / 120}px`;
 
@@ -856,6 +894,11 @@ class Chess extends Window {
     Board_mousemove(event, isTouch) {
         if (event.buttons !== 1 && !isTouch) return;
 
+        if (isTouch && event.touches.length > 1) {
+            this.Board_mouseleave(event, isTouch);
+            return;
+        }
+
         if (this.selected) {
             let x = isTouch ? this.selectedPosition.x + event.touches[0].clientX - this.x0 : this.selectedPosition.x + event.x - this.x0;
             let y = isTouch ? this.selectedPosition.y + event.touches[0].clientY - this.board.getBoundingClientRect().height / 8 - this.y0 : this.selectedPosition.y + event.y - this.y0;
@@ -881,7 +924,7 @@ class Chess extends Window {
             rank1 = Math.max(0, Math.min(7, rank1));
 
             this.selected.style.transition = ".4s cubic-bezier(.2,.8,.3,1.2)";
-            this.selected.style.transform = "none";
+            this.selected.style.transform = this.isFlipped ? "rotate(180deg)" : "none";
             this.selected.style.zIndex = "0";
 
             this.board.style.cursor = "inherit";
@@ -912,7 +955,7 @@ class Chess extends Window {
         this.selected.style.transition = ".4s cubic-bezier(.2,.8,.3,1.2)";
         this.selected.style.left = this.selectedPosition.x * 100 / this.board.getBoundingClientRect().width + "%";
         this.selected.style.top = this.selectedPosition.y * 100 / this.board.getBoundingClientRect().height + "%";
-        this.selected.style.transform = "none";
+        this.selected.style.transform = this.isFlipped ? "rotate(180deg)" : "none";
         this.selected.style.zIndex = "0";
         this.selected.style.cursor = "inherit";
         this.selected = null;

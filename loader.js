@@ -37,7 +37,8 @@ let loader_styles = [
     const secondaryScripts = [
         "ipbox.js",
         "console.js",
-        "tabs.js"
+        "tabs.js",
+        "wasm_exec.js"
     ];
 
     const tertiaryScripts = [
