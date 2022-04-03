@@ -23,10 +23,9 @@ class Chess extends Window {
         this.board = document.createElement("div");
         this.board.className = "chess-board";
         
-        this.board.onmousemove  = event => this.Board_mousemove(event, false);
-        this.board.onmouseup    = event => this.Board_mouseup(event, false);
-        this.board.onmouseleave = event => this.Board_mouseleave(event, false);
-        
+        this.board.onmousemove   = event => this.Board_mousemove(event, false);
+        this.board.onmouseup     = event => this.Board_mouseup(event, false);
+        this.board.onmouseleave  = event => this.Board_mouseleave(event, false);
         this.board.ontouchmove   = event => this.Board_mousemove(event, true);
         this.board.ontouchend    = event => this.Board_mouseup(event, true);
         this.board.ontouchcancel = event => this.Board_mouseleave(event, true);
