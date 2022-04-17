@@ -311,27 +311,16 @@ class Chess extends Window {
         }
 
         //castling flags
-        if (this.game.placement[p0.x][p0.y] === "k") this.game.castling = this.game.castling.replace("k", "").replace("q", "");
         if (this.game.placement[p0.x][p0.y] === "K") this.game.castling = this.game.castling.replace("K", "").replace("Q", "");
-        if (this.game.placement[p0.x][p0.y] === "r" && p0.x === 0 && p0.y === 0) this.game.castling = this.game.castling.replace("q", "");
-        if (this.game.placement[p0.x][p0.y] === "r" && p0.x === 7 && p0.y === 0) this.game.castling = this.game.castling.replace("k", "");
+        if (this.game.placement[p0.x][p0.y] === "k") this.game.castling = this.game.castling.replace("k", "").replace("q", "");
         if (this.game.placement[p0.x][p0.y] === "R" && p0.x === 0 && p0.y === 7) this.game.castling = this.game.castling.replace("Q", "");
         if (this.game.placement[p0.x][p0.y] === "R" && p0.x === 7 && p0.y === 7) this.game.castling = this.game.castling.replace("K", "");
+        if (this.game.placement[p0.x][p0.y] === "r" && p0.x === 0 && p0.y === 0) this.game.castling = this.game.castling.replace("q", "");
+        if (this.game.placement[p0.x][p0.y] === "r" && p0.x === 7 && p0.y === 0) this.game.castling = this.game.castling.replace("k", "");
         if (this.game.castling === "") this.game.castling = "-";
 
         //castling
-        if (this.game.placement[p0.x][p0.y] === "k" && Math.abs(p0.x - p1.x) === 2) {
-            if (p0.x - p1.x === 2) { //queenside
-                this.game.placement[3][0] === "r";
-                this.game.placement[0][0] === null;
-
-            } else if (p0.x - p1.x === -2) { //kingside
-                this.game.placement[5][0] === "r";
-                this.game.placement[7][0] === null;
-            }
-        }
-        
-        if (this.game.placement[p0.x][p0.y] === "k" && Math.abs(p0.x - p1.x) === 2) { //black castling
+        if (this.game.placement[p0.x][p0.y] === "k") { //black castling
             if (p0.x - p1.x === 2) { //queenside
                 this.game.placement[3][0] = "r";
                 this.game.placement[0][0] = null;
@@ -348,7 +337,7 @@ class Chess extends Window {
             }
         }
 
-        if (this.game.placement[p0.x][p0.y] === "K" && Math.abs(p0.x - p1.x) === 2) { //white castling
+        if (this.game.placement[p0.x][p0.y] === "K") { //white castling
             if (p0.x - p1.x === 2) { //queenside
                 this.game.placement[3][7] = "R";
                 this.game.placement[0][7] = null;
@@ -376,6 +365,7 @@ class Chess extends Window {
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
+
         this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
         
         element.style.left = p1.x * 12.5 + "%";
@@ -501,55 +491,53 @@ class Chess extends Window {
 
         const pawnMoves = () => {
             if (color === "w") {
-                if (game.placement[p.x][p.y - 1] === null)
+                if (game.placement[p.x][p.y - 1] === null) //1 squares forward
                     moves.push({ x: p.x, y: p.y - 1 });
 
-                if (p.y === 6 &&
+                if (p.y === 6 && //2 squares forward
                     game.placement[p.x][p.y - 1] === null &&
-                    game.placement[p.x][p.y - 2] === null)
+                    game.placement[p.x][p.y - 2] === null) 
                     moves.push({ x: p.x, y: p.y - 2 });
 
-                if (p.x > 0 &&
+                if (p.x > 0 && //capture left
                     game.placement[p.x - 1][p.y - 1] !== null &&
                     this.GetPieceColor({ x: p.x - 1, y: p.y - 1 }, game) !== color)
                     moves.push({ x: p.x - 1, y: p.y - 1 });
 
-                if (p.x < 7 &&
+                if (p.x < 7 && //capture right
                     game.placement[p.x + 1][p.y - 1] !== null &&
                     this.GetPieceColor({ x: p.x + 1, y: p.y - 1 }, game) !== color)
                     moves.push({ x: p.x + 1, y: p.y - 1 });
 
-                if (game.enpassant !== "-") { //en passant
+                if (game.enpassant !== "-") { //enpassant
                     let x = game.enpassant.charCodeAt(0) - 97;
                     let y = 8 - parseInt(game.enpassant[1]);
-
                     if (y === p.y && Math.abs(x - p.x) === 1)
                         moves.push({ x: x, y: y - 1 });
                 }
 
             } else {
-                if (game.placement[p.x][p.y + 1] === null)
+                if (game.placement[p.x][p.y + 1] === null) //1 squares forward
                     moves.push({ x: p.x, y: p.y + 1 });
 
-                if (p.y === 1 &&
+                if (p.y === 1 && //2 squares forward
                     game.placement[p.x][p.y + 1] === null &&
                     game.placement[p.x][p.y + 2] === null)
                     moves.push({ x: p.x, y: p.y + 2 });
 
-                if (p.x > 0 &&
+                if (p.x > 0 && //capture left
                     game.placement[p.x - 1][p.y + 1] !== null &&
                     this.GetPieceColor({ x: p.x - 1, y: p.y + 1 }, game) !== color)
                     moves.push({ x: p.x - 1, y: p.y + 1 });
 
-                if (p.x < 7 &&
+                if (p.x < 7 && //capture right
                     game.placement[p.x + 1][p.y + 1] !== null &&
                     this.GetPieceColor({ x: p.x + 1, y: p.y + 1 }, game) !== color)
                     moves.push({ x: p.x + 1, y: p.y + 1 });
 
-                if (game.enpassant !== "-") { //en passant
+                if (game.enpassant !== "-") { //enpassant
                     let x = game.enpassant.charCodeAt(0) - 97;
                     let y = 8 - parseInt(game.enpassant[1]);
-
                     if (y === p.y && Math.abs(x - p.x) === 1)
                         moves.push({ x: x, y: y + 1 });
                 }
@@ -646,23 +634,7 @@ class Chess extends Window {
                 moves.push({ x: x, y: y });
             }
 
-            if (color === "b") {
-                if (game.castling.indexOf("q") > -1 &&
-                    game.placement[0][0] === "r" &&
-                    game.placement[1][0] === null &&
-                    game.placement[2][0] === null &&
-                    game.placement[3][0] === null) { //black queenside castling
-                    moves.push({ x: p.x - 2, y: p.y });
-                }
-
-                if (game.castling.indexOf("k") > -1 &&
-                    game.placement[7][0] === "r" &&
-                    game.placement[5][0] === null &&
-                    game.placement[6][0] === null) { //black kingside castling
-                    moves.push({ x: p.x + 2, y: p.y });
-                }
-
-            } else if (color === "w") {
+            if (color === "w") {
                 if (game.castling.indexOf("Q") > -1 &&
                     game.placement[0][7] === "R" &&
                     game.placement[1][7] === null &&
@@ -675,6 +647,22 @@ class Chess extends Window {
                     game.placement[7][7] === "R" &&
                     game.placement[5][7] === null &&
                     game.placement[6][7] === null) { //white kingside castling
+                    moves.push({ x: p.x + 2, y: p.y });
+                }
+
+            } else if (color === "b") {
+                if (game.castling.indexOf("q") > -1 &&
+                    game.placement[0][0] === "r" &&
+                    game.placement[1][0] === null &&
+                    game.placement[2][0] === null &&
+                    game.placement[3][0] === null) { //black queenside castling
+                    moves.push({ x: p.x - 2, y: p.y });
+                }
+
+                if (game.castling.indexOf("k") > -1 &&
+                    game.placement[7][0] === "r" &&
+                    game.placement[5][0] === null &&
+                    game.placement[6][0] === null) { //black kingside castling
                     moves.push({ x: p.x + 2, y: p.y });
                 }
             }
@@ -727,7 +715,7 @@ class Chess extends Window {
                     kingsPosition = { x: x, y: y };
                     break;
                 }
-            }   
+            }
             if (kingsPosition) break;
         }
 
@@ -738,14 +726,14 @@ class Chess extends Window {
                 }
 
                 if (color === "w") {
-                    if (Math.abs(p.x-pseudolegal[i].x) === 2 && enemyControl[4][7]) //kcastling while in check
+                    if (Math.abs(p.x - pseudolegal[i].x) === 2 && enemyControl[4][7]) //castling while in check
                         continue;
                     if (p.x-pseudolegal[i].x === -2 && enemyControl[5][7] || p.x-pseudolegal[i].x === 2 && enemyControl[3][7]) //castling through check
                         continue;
                 }
 
                 if (color === "b") {
-                    if (Math.abs(p.x-pseudolegal[i].x) === 2 && enemyControl[4][0]) //castling while in check
+                    if (Math.abs(p.x - pseudolegal[i].x) === 2 && enemyControl[4][0]) //castling while in check
                         continue;
                     if (p.x-pseudolegal[i].x === -2 && enemyControl[5][0] || p.x-pseudolegal[i].x === 2 && enemyControl[3][0]) //castling through check
                         continue;                    
@@ -765,7 +753,7 @@ class Chess extends Window {
             clone.placement[pseudolegal[i].x][pseudolegal[i].y] = clone.placement[p.x][p.y];
             clone.placement[p.x][p.y] = null;
             
-            if (this.IsInCheck(clone, color)) {
+            if (this.InCheck(clone, color)) {
                 continue;
             }
             
@@ -813,8 +801,8 @@ class Chess extends Window {
 
         return area;
     }
-    
-    IsInCheck(game, color) {
+
+    InCheck(game, color) {
         const target = color === "w" ? "K" : "k";
         const enemyColor = color === "w" ? "b" : "w";
         let kingsPosition = null;
@@ -967,5 +955,4 @@ class Chess extends Window {
         this.legalMoves = [];
         this.ClearIndicators();
     }
-
 }
