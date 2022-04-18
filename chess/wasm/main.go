@@ -610,6 +610,12 @@ func inCheck(game Game, color bool) bool {
 
 		case 0b00010000: //q
 			var moves []Move = bishopMoves(&game, piece.color, &pieces[i])
+			for i := 0; i < len(moves); i++ {
+				if moves[i].p1.x == kingsPosition.x && moves[i].p1.y == kingsPosition.y {
+					return true
+				}
+			}
+			
 			moves = rockMoves(&game, piece.color, &pieces[i])
 			for i := 0; i < len(moves); i++ {
 				if moves[i].p1.x == kingsPosition.x && moves[i].p1.y == kingsPosition.y {
