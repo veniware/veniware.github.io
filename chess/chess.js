@@ -95,7 +95,6 @@ class Chess extends Window {
     Init() {
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("chess/chess.wasm"), go.importObject).then((result) => {
-            
             if (this.args)
                 this.LoadFen(this.args);
             else
@@ -781,7 +780,7 @@ class Chess extends Window {
                 if (color !== pieceColor) continue;
                 
                 if (piece.toLowerCase() === "p") { //count only captures for pawns
-                    if (pieceColor === "w") {                            
+                    if (pieceColor === "w") {
                         if (x > 0) area[x-1][y-1] = true;
                         if (x < 7) area[x+1][y-1] = true;
                     } else {
@@ -849,7 +848,7 @@ class Chess extends Window {
         this.selected.style.transition = "none";
 
         this.board.style.cursor = "none";
-        
+
         let pieceColor = this.GetPieceColor({x:this.file0, y:this.rank0}, this.game);
         if (pieceColor !== this.game.activecolor) return;
 

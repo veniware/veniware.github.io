@@ -23,7 +23,7 @@ type Piece struct {
 }
 
 type Position struct {
-	x, y byte
+	x, y int
 }
 
 type Move struct {
@@ -32,7 +32,7 @@ type Move struct {
 
 func main() {
 	c := make(chan struct{}, 0)
-	js.Global().Set("calc", js.FuncOf(calculate))
+	js.Global().Set("calc", js.FuncOf(calc))
 	<-c
 }
 
@@ -139,8 +139,8 @@ func pawnMoves(game *Game, color bool, p *Position) []Move {
 		}
 
 		if game.enpassant != "-" { //enpassant
-			var enpassant_x byte = game.enpassant[0] - 97
-			var enpassant_y byte = 8 - game.enpassant[1]
+			var enpassant_x int = int(byte(game.enpassant[0]) - 97)
+			var enpassant_y int = int(8 - byte(game.enpassant[1]))
 			if enpassant_y == p.y && math.Abs(float64(enpassant_x-p.x)) == 1 {
 				moves = append(moves, Move{Position{p.x, p.y}, Position{enpassant_x, enpassant_y - 1}})
 			}
@@ -170,8 +170,8 @@ func pawnMoves(game *Game, color bool, p *Position) []Move {
 		}
 
 		if game.enpassant != "-" { //enpassant
-			var enpassant_x byte = game.enpassant[0] - 97
-			var enpassant_y byte = 8 - game.enpassant[1]
+			var enpassant_x int = int(byte(game.enpassant[0]) - 97)
+			var enpassant_y int = 8 - int(game.enpassant[1])
 			if enpassant_y == p.y && math.Abs(float64(enpassant_x-p.x)) == 1 {
 				moves = append(moves, Move{Position{p.x, p.y}, Position{enpassant_x, enpassant_y + 1}})
 			}
@@ -196,8 +196,8 @@ func knightMoves(game *Game, color bool, p *Position) []Move {
 	}
 
 	for _, offset := range offsets {
-		var x byte = byte(int(p.x) + offset[0])
-		var y byte = byte(int(p.y) + offset[1])
+		var x int = p.x + offset[0]
+		var y int = p.y + offset[1]
 
 		if (x < 0 || x > 7) || (y < 0 || y > 7) {
 			continue
@@ -217,8 +217,9 @@ func bishopMoves(game *Game, color bool, p *Position) []Move {
 	var moves []Move
 
 	for i := 1; i < 8; i++ {
-		var x byte = byte(int(p.x) - i)
-		var y byte = byte(int(p.y) - i)
+		var x int = p.x - i
+		var y int = p.y - i
+
 		if x < 0 || y < 0 {
 			break
 		}
@@ -232,8 +233,8 @@ func bishopMoves(game *Game, color bool, p *Position) []Move {
 	}
 
 	for i := 1; i < 8; i++ {
-		var x byte = byte(int(p.x) - i)
-		var y byte = byte(int(p.y) + i)
+		var x int = p.x - i
+		var y int = p.y + i
 		if x < 0 || y > 7 {
 			break
 		}
@@ -247,8 +248,8 @@ func bishopMoves(game *Game, color bool, p *Position) []Move {
 	}
 
 	for i := 1; i < 8; i++ {
-		var x byte = byte(int(p.x) + i)
-		var y byte = byte(int(p.y) - i)
+		var x int = p.x + i
+		var y int = p.y - i
 		if x > 7 || y < 0 {
 			break
 		}
@@ -262,8 +263,8 @@ func bishopMoves(game *Game, color bool, p *Position) []Move {
 	}
 
 	for i := 1; i < 8; i++ {
-		var x byte = byte(int(p.x) + i)
-		var y byte = byte(int(p.y) + i)
+		var x int = p.x + i
+		var y int = p.y + i
 		if x > 7 || y > 7 {
 			break
 		}
@@ -282,41 +283,41 @@ func bishopMoves(game *Game, color bool, p *Position) []Move {
 func rockMoves(game *Game, color bool, p *Position) []Move {
 	var moves []Move
 
-	for i := int(p.x - 1); i > -1; i-- {
+	for i := int(p.x) - 1; i > -1; i-- {
 		if game.placement[i][p.y].piece != 0 && game.placement[i][p.y].color == color {
 			break
 		}
-		moves = append(moves, Move{Position{p.x, p.y}, Position{byte(i), p.y}})
+		moves = append(moves, Move{Position{p.x, p.y}, Position{i, p.y}})
 		if game.placement[i][p.y].piece != 0 && game.placement[i][p.y].color != color {
 			break
 		}
 	}
 
-	for i := int(p.x + 1); i < 8; i++ {
+	for i := int(p.x) + 1; i < 8; i++ {
 		if game.placement[i][p.y].piece != 0 && game.placement[i][p.y].color == color {
 			break
 		}
-		moves = append(moves, Move{Position{p.x, p.y}, Position{byte(i), p.y}})
+		moves = append(moves, Move{Position{p.x, p.y}, Position{i, p.y}})
 		if game.placement[i][p.y].piece != 0 && game.placement[i][p.y].color != color {
 			break
 		}
 	}
 
-	for i := int(p.y - 1); i > -1; i-- {
+	for i := int(p.y) - 1; i > -1; i-- {
 		if game.placement[p.x][i].piece != 0 && game.placement[p.x][i].color == color {
 			break
 		}
-		moves = append(moves, Move{Position{p.x, p.y}, Position{p.x, byte(i)}})
+		moves = append(moves, Move{Position{p.x, p.y}, Position{p.x, i}})
 		if game.placement[p.x][i].piece != 0 && game.placement[p.x][i].color != color {
 			break
 		}
 	}
 
-	for i := int(p.y + 1); i < 8; i++ {
+	for i := int(p.y) + 1; i < 8; i++ {
 		if game.placement[p.x][i].piece != 0 && game.placement[p.x][i].color == color {
 			break
 		}
-		moves = append(moves, Move{Position{p.x, p.y}, Position{p.x, byte(i)}})
+		moves = append(moves, Move{Position{p.x, p.y}, Position{p.x, i}})
 		if game.placement[p.x][i].piece != 0 && game.placement[p.x][i].color != color {
 			break
 		}
@@ -335,8 +336,8 @@ func kingMoves(game *Game, color bool, p *Position) []Move {
 	}
 
 	for i := 0; i < 8; i++ {
-		var x byte = p.x + byte(offset[i][0])
-		var y byte = p.y + byte(offset[i][1])
+		var x int = p.x + offset[i][0]
+		var y int = p.y + offset[i][1]
 
 		if x < 0 || x > 7 || y < 0 || y > 7 {
 			continue
@@ -383,26 +384,32 @@ func kingMoves(game *Game, color bool, p *Position) []Move {
 	return moves
 }
 
-func peudolegalMoves(game *Game, color bool) []Move {
+func getPieces(game *Game, color bool) []Position {
 	var pieces []Position
 
 	if color { //white
-		for y := byte(0); y < 8; y++ {
-			for x := byte(0); x < 8; x++ {
+		for y := 0; y < 8; y++ {
+			for x := 0; x < 8; x++ {
 				if game.placement[x][y].color {
 					pieces = append(pieces, Position{x: x, y: y})
 				}
 			}
 		}
 	} else { //black
-		for y := byte(0); y < 8; y++ {
-			for x := byte(0); x < 8; x++ {
+		for y := 0; y < 8; y++ {
+			for x := 0; x < 8; x++ {
 				if !game.placement[x][y].color {
 					pieces = append(pieces, Position{x: x, y: y})
 				}
 			}
 		}
 	}
+
+	return pieces
+}
+
+func peudolegalMoves(game *Game, color bool) []Move {
+	var pieces []Position = getPieces(game, color)
 
 	var moves []Move
 
@@ -447,7 +454,7 @@ func legalMoves(game *Game, color bool) []Move {
 	var moves []Move
 
 	for i := 0; i < len(pseudolegal); i++ {
-		var temp Game = playMove(*game, pseudolegal[i])
+		var temp Game = makeMove(*game, pseudolegal[i])
 		if !inCheck(temp, color) {
 			moves = append(moves, pseudolegal[i])
 		}
@@ -457,13 +464,13 @@ func legalMoves(game *Game, color bool) []Move {
 	return moves
 }
 
-func playMove(game Game, move Move) Game {
+func makeMove(game Game, move Move) Game {
 	//TODO: en passant
 	//TODO: castling
 	//TODO: ...
 
 	if game.placement[move.p0.x][move.p0.y].piece == 0b00000001 && math.Abs(float64(move.p0.y-move.p1.y)) == 2 { //en passant flag
-		game.enpassant = string([]byte{97 + move.p1.x, 8 - move.p1.y})
+		game.enpassant = string([]byte{97 + byte(move.p1.x), 8 - byte(move.p1.y)})
 	} else {
 		game.enpassant = "-"
 	}
@@ -544,8 +551,8 @@ func playMove(game Game, move Move) Game {
 
 func inCheck(game Game, color bool) bool {
 	var kingsPosition Position
-	for y := byte(0); y < 8; y++ { //find king
-		for x := byte(0); x < 8; x++ {
+	for y := 0; y < 8; y++ { //find king
+		for x := 0; x < 8; x++ {
 			if game.placement[x][y].piece == 0b00100000 && game.placement[x][y].color == color {
 				kingsPosition = Position{x, y}
 				break
@@ -553,24 +560,7 @@ func inCheck(game Game, color bool) bool {
 		}
 	}
 
-	var pieces []Position
-	if color { //white
-		for y := byte(0); y < 8; y++ {
-			for x := byte(0); x < 8; x++ {
-				if game.placement[x][y].color {
-					pieces = append(pieces, Position{x: x, y: y})
-				}
-			}
-		}
-	} else { //black
-		for y := byte(0); y < 8; y++ {
-			for x := byte(0); x < 8; x++ {
-				if !game.placement[x][y].color {
-					pieces = append(pieces, Position{x: x, y: y})
-				}
-			}
-		}
-	}
+	var pieces []Position = getPieces(&game, color)
 
 	for i := 0; i < len(pieces); i++ {
 		var piece Piece = game.placement[pieces[i].x][pieces[i].y]
@@ -615,7 +605,7 @@ func inCheck(game Game, color bool) bool {
 					return true
 				}
 			}
-			
+
 			moves = rockMoves(&game, piece.color, &pieces[i])
 			for i := 0; i < len(moves); i++ {
 				if moves[i].p1.x == kingsPosition.x && moves[i].p1.y == kingsPosition.y {
@@ -636,7 +626,103 @@ func inCheck(game Game, color bool) bool {
 	return false
 }
 
-func calculate(this js.Value, i []js.Value) interface{} {
+func evaluate(game *Game) int {
+	var whitePieces []Position = getPieces(game, true)
+	var blackPieces []Position = getPieces(game, false)
+
+	var score int = 0
+
+	for i := 0; i < len(whitePieces); i++ {
+		switch game.placement[whitePieces[i].x][whitePieces[i].y].piece {
+		case 0b00000001: //pawn
+			score += 100
+			break
+
+		case 0b00000010: //night
+			score += 300
+			break
+
+		case 0b00000100: //bishop
+			score += 301
+			break
+
+		case 0b00001000: //rook
+			score += 500
+			break
+
+		case 0b00010000: //queen
+			score += 900
+			break
+
+			//case 0b00100000: //king
+			//	score += 0
+			//break
+		}
+	}
+
+	for i := 0; i < len(blackPieces); i++ {
+		switch game.placement[blackPieces[i].x][blackPieces[i].y].piece {
+		case 0b00000001: //pawn
+			score -= 100
+
+		case 0b00000010: //night
+			score -= 300
+			break
+
+		case 0b00000100: //bishop
+			score -= 301
+			break
+
+		case 0b00001000: //rook
+			score -= 500
+			break
+
+		case 0b00010000: //queen
+			score -= 900
+			break
+
+			//case 0b00100000: //king
+			//	score += 0
+			//break
+		}
+	}
+
+	var perspective int
+	if game.color {
+		perspective = 1
+	} else {
+		perspective = -1
+	}
+
+	//TODO:
+
+	return score * perspective
+}
+
+func calculate(game *Game, depth int) (Move, int) {
+	var bestMove Move = Move{}
+	var bestScore int = math.MinInt32
+
+	if depth == 0 {
+		return bestMove, evaluate(game)
+	}
+
+	moves := legalMoves(game, game.color)
+
+	for i := 0; i < len(moves); i++ {
+		var next Game = makeMove(*game, moves[i])
+		_, score := calculate(&next, depth-1)
+
+		if score > bestScore {
+			bestMove = moves[i]
+			bestScore = score
+		}
+	}
+
+	return bestMove, bestScore
+}
+
+func calc(this js.Value, i []js.Value) interface{} {
 	var fen string = i[0].String()
 	var depth int = i[1].Int()
 
@@ -646,15 +732,6 @@ func calculate(this js.Value, i []js.Value) interface{} {
 		return err.Error()
 	}
 
-	//TODO:
-
-	println(game.color)
-	println(depth)
-
-	return nil
-}
-
-func evaluate(g *Game) int {
-	//TODO:
-	return 0
+	move, _ := calculate(&game, depth)
+	return move
 }
