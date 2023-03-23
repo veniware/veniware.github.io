@@ -124,7 +124,7 @@ class Chess extends Window {
 
         if (min < 400)
             for (const element of this.board.querySelectorAll(".chess-coord"))
-                element.style.opacity = "0";            
+                element.style.opacity = "0";
         else
             for (const element of this.board.querySelectorAll(".chess-coord"))
                 element.style.opacity = "1";

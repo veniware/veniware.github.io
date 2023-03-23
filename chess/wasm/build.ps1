@@ -1,3 +1,4 @@
-$Env:GOARCH ="wasm"
-$Env:GOOS = "js"
-go build -o ..\chess.wasm main.go
+$Env:GOARCH ="amd64"
+$Env:GOOS = "windows"
+go build -o chess.exe main.go chess.go
+.\chess.exe
