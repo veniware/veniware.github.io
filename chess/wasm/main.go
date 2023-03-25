@@ -6,12 +6,13 @@ import (
 
 func main() {
 	c := make(chan struct{}, 0)
-	js.Global().Set("calc", js.FuncOf(calc))
+	js.Global().Set("ChessAi", js.FuncOf(calc))
 	<-c
 }
 
 func calc(this js.Value, i []js.Value) interface{} {
 	var fen string = i[0].String()
+	//var depth string = i[1].String()
 
 	game, err := loadFen(&fen)
 
@@ -19,8 +20,10 @@ func calc(this js.Value, i []js.Value) interface{} {
 		return err.Error()
 	}
 
+	//printPosition(&game)
+
 	var move Move = randomMove(&game)
-	return move
+	return moveToString(move)
 }
 
 /*

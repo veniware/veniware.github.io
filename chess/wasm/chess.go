@@ -118,8 +118,25 @@ func loadFen(fen *string) (Game, error) {
 	return Game{placement, color, castling, enpassant, halfmove, fullmove}, nil
 }
 
+func moveToString(move Move) string {
+	if move.p0.x == 0 && move.p0.y == 0 && move.p1.x == 0 && move.p1.y == 0 {
+		return ""
+	}
+
+	var s string = ""
+	s += string(97 + move.p0.x)
+	s += strconv.Itoa(8 - move.p0.y)
+	s += "-"
+	s += string(97 + move.p1.x)
+	s += strconv.Itoa(8 - move.p1.y)
+
+	return s
+}
+
 func printPosition(game *Game) {
 	for y := 0; y < 8; y++ {
+		print(8 - y)
+		print("  ")
 		for x := 0; x < 8; x++ {
 			var l string
 
@@ -161,8 +178,10 @@ func printPosition(game *Game) {
 			print(" ")
 
 		}
-		println()
+		println(" ")
 	}
+
+	println(" ")
 }
 
 func pawnMoves(game *Game, color bool, p *Position) []Move {
