@@ -32,6 +32,9 @@ class Chess extends Window {
         
         this.content.appendChild(this.board);
 
+        this.playerA = "ui";
+        this.playerB = "ai";
+
         this.game = {
             fen: null,
             placement: [],
@@ -89,16 +92,25 @@ class Chess extends Window {
         setTimeout(() => { this.AfterResize(); }, ANIM_DURATION);
         setTimeout(() => { this.AfterResize(); }, 1000);
 
-        this.Init();
+        if (this.playerA === "ai" || this.playerB === "ai") {
+            this.InitWasmChessAi();
+        } else {
+            if (this.args) {
+                this.LoadFen(this.args);
+            } else {
+                this.LoadFen(FEN_START);
+            }
+        }
     }
 
-    Init() {
+    InitWasmChessAi() {
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("chess/chess.wasm"), go.importObject).then((result) => {
-            if (this.args)
+            if (this.args) {
                 this.LoadFen(this.args);
-            else
+            } else {
                 this.LoadFen(FEN_START);
+            }
 
             go.run(result.instance);
         });
@@ -284,6 +296,7 @@ class Chess extends Window {
 
     PlayMove(p0, p1, element) {
         if (p0.x === p1.x && p0.y === p1.y) return;
+        if (this.isClosed) return;
 
         let isCapture = false;
 
@@ -374,7 +387,21 @@ class Chess extends Window {
 
         if (this.game.placement[p1.x][p1.y] === "P" && p1.y === 0 || 
             this.game.placement[p1.x][p1.y] === "p" && p1.y === 7) { //promote
-            this.PromoteDialog(p1, this.selected);
+            
+            //ai always promotes to queen
+            if (this.game.activecolor === "w" && this.playerA === "ai") {
+                this.game.placement[p1.x][p1.y] = "Q";
+                element.style.backgroundImage = "url(chess/queen.svg)";
+                //TODO: updateMoveList("Q");
+
+            } else if (this.game.activecolor === "b" && this.playerB === "ai") {
+                this.game.placement[p1.x][p1.y] = "q";
+                element.style.backgroundImage = "url(chess/queen.svg)";
+                //TODO: updateMoveList("q");
+
+            } else {
+                this.PromoteDialog(p1, element);
+            }
         }
         
         this.AddChessNotation(p0, p1, isCapture);
@@ -389,7 +416,25 @@ class Chess extends Window {
         }, 0);
 
         this.game.lastmove = `${String.fromCharCode(97+p0.x)}${8-p0.y}${String.fromCharCode(97+p1.x)}${8-p1.y}`;
-        this.args = this.GetCurrentFen();
+
+        let fen = this.GetCurrentFen();
+        this.args = fen;
+
+
+        if (this.game.activecolor === "w" && this.playerA === "ai" ||
+            this.game.activecolor === "b" && this.playerB === "ai") {
+            
+            let aiMove = ChessAi(fen, 1);
+            if (!aiMove) throw ("ai panic");
+            if (aiMove.length < 5) return;
+
+            let aiP0 = {x: aiMove.charCodeAt(0) - 97, y: 8 - parseInt(aiMove[1])};
+            let aiP1 = {x: aiMove.charCodeAt(3) - 97, y: 8 - parseInt(aiMove[4])};
+
+            setTimeout(()=>{
+                this.PlayMove(aiP0, aiP1, null);
+            }, 500);
+        }
     }
 
     PromoteDialog(p, element) {
@@ -849,6 +894,14 @@ class Chess extends Window {
 
         this.board.style.cursor = "none";
 
+
+        if (this.game.activecolor === "w" && this.playerA === "ai") {
+            return;
+        }
+        if (this.game.activecolor === "b" && this.playerB === "ai") {
+            return;
+        }
+
         let pieceColor = this.GetPieceColor({x:this.file0, y:this.rank0}, this.game);
         if (pieceColor !== this.game.activecolor) return;
 
@@ -954,4 +1007,5 @@ class Chess extends Window {
         this.legalMoves = [];
         this.ClearIndicators();
     }
+
 }
