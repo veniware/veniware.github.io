@@ -62,7 +62,7 @@ func loadFen(fen *string) (Game, error) {
 		}
 
 		switch target {
-		case "p":
+		case "p": //black
 			placement[pos_x][pos_y] = Piece{piece: 0b00000001, color: false}
 			break
 		case "n":
@@ -81,7 +81,7 @@ func loadFen(fen *string) (Game, error) {
 			placement[pos_x][pos_y] = Piece{piece: 0b00100000, color: false}
 			break
 
-		case "P":
+		case "P": //white
 			placement[pos_x][pos_y] = Piece{piece: 0b00000001, color: true}
 			break
 		case "N":
@@ -604,17 +604,19 @@ func makeMove(game Game, move Move) Game {
 		}
 	}
 
+	//move
 	game.placement[move.p1.x][move.p1.y] = game.placement[move.p0.x][move.p0.y]
 	game.placement[move.p0.x][move.p0.y] = Piece{0, false}
 
 	//promote
-	if game.placement[move.p1.x][move.p1.y].piece == 0b00000001 {
+	/*if game.placement[move.p1.x][move.p1.y].piece == 0b00000001 {
 		if game.placement[move.p1.x][move.p1.y].color && move.p1.y == 0 { //white pawn
-			game.placement[move.p1.x][move.p1.y].piece = 0b00010000
+			game.placement[move.p1.x][move.p1.y] = Piece{0b00010000, true}
+
 		} else if !game.placement[move.p1.x][move.p1.y].color && move.p1.y == 7 { //black pawn
-			game.placement[move.p1.x][move.p1.y].piece = 0b00010000
+			game.placement[move.p1.x][move.p1.y] = Piece{0b00010000, false}
 		}
-	}
+	}*/
 
 	game.color = !game.color
 

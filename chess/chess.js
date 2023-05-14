@@ -1,6 +1,5 @@
-const FEN_START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
 class Chess extends Window {
+    static FEN_START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     constructor(args) {
         super([64,64,64]);
@@ -98,7 +97,7 @@ class Chess extends Window {
             if (this.args) {
                 this.LoadFen(this.args);
             } else {
-                this.LoadFen(FEN_START);
+                this.LoadFen(Chess.FEN_START);
             }
         }
     }
@@ -109,7 +108,7 @@ class Chess extends Window {
             if (this.args) {
                 this.LoadFen(this.args);
             } else {
-                this.LoadFen(FEN_START);
+                this.LoadFen(Chess.FEN_START);
             }
 
             go.run(result.instance);
@@ -377,15 +376,13 @@ class Chess extends Window {
 
         this.game.placement[p1.x][p1.y] = this.game.placement[p0.x][p0.y];
         this.game.placement[p0.x][p0.y] = null;
-
-        this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
         
         element.style.left = p1.x * 12.5 + "%";
         element.style.top = p1.y * 12.5 + "%";
 
         element.setAttribute("p", `${p1.x}${p1.y}`);
 
-        if (this.game.placement[p1.x][p1.y] === "P" && p1.y === 0 || 
+        if (this.game.placement[p1.x][p1.y] === "P" && p1.y === 0 ||
             this.game.placement[p1.x][p1.y] === "p" && p1.y === 7) { //promote
             
             //ai always promotes to queen
@@ -400,10 +397,24 @@ class Chess extends Window {
                 //TODO: updateMoveList("q");
 
             } else {
-                this.PromoteDialog(p1, element);
+                const callback = ()=>{
+                    let aiMove = ChessAi(fen, 1);
+                    if (!aiMove) throw ("ai panic");
+                    if (aiMove.length < 5) return;
+    
+                    let aiP0 = {x: aiMove.charCodeAt(0) - 97, y: 8 - parseInt(aiMove[1])};
+                    let aiP1 = {x: aiMove.charCodeAt(3) - 97, y: 8 - parseInt(aiMove[4])};
+                    
+                    setTimeout(()=>{
+                        this.PlayMove(aiP0, aiP1, null);
+                    }, 500);
+                };
+                this.PromoteDialog(p1, element, callback);
             }
         }
         
+        this.game.activecolor = this.game.activecolor === "w" ? "b" : "w";
+
         this.AddChessNotation(p0, p1, isCapture);
 
         for (let y = 0; y < 8; y++)
@@ -423,21 +434,25 @@ class Chess extends Window {
 
         if (this.game.activecolor === "w" && this.playerA === "ai" ||
             this.game.activecolor === "b" && this.playerB === "ai") {
-            
-            let aiMove = ChessAi(fen, 1);
-            if (!aiMove) throw ("ai panic");
-            if (aiMove.length < 5) return;
 
-            let aiP0 = {x: aiMove.charCodeAt(0) - 97, y: 8 - parseInt(aiMove[1])};
-            let aiP1 = {x: aiMove.charCodeAt(3) - 97, y: 8 - parseInt(aiMove[4])};
+            if (!(this.game.placement[p1.x][p1.y] === "P" && p1.y === 0) &&
+                !(this.game.placement[p1.x][p1.y] === "p" && p1.y === 7)) { //not a promote
+                
+                let aiMove = ChessAi(fen, 1);
+                if (!aiMove) throw ("ai panic");
+                if (aiMove.length < 5) return;
 
-            setTimeout(()=>{
-                this.PlayMove(aiP0, aiP1, null);
-            }, 500);
+                let aiP0 = {x: aiMove.charCodeAt(0) - 97, y: 8 - parseInt(aiMove[1])};
+                let aiP1 = {x: aiMove.charCodeAt(3) - 97, y: 8 - parseInt(aiMove[4])};
+
+                setTimeout(()=>{
+                    this.PlayMove(aiP0, aiP1, null);
+                }, 500);
+            }
         }
     }
 
-    PromoteDialog(p, element) {
+    PromoteDialog(p, element, callback) {
         const cover = document.createElement("div");
         cover.className = "chess-cover";
         this.content.appendChild(cover);
@@ -472,6 +487,7 @@ class Chess extends Window {
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "Q" : "q";
             element.style.backgroundImage = "url(chess/queen.svg)";
+            callback();
             updateMoveList("Q");
         };
 
@@ -479,6 +495,7 @@ class Chess extends Window {
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "R" : "r";
             element.style.backgroundImage = "url(chess/rook.svg)";
+            callback();
             updateMoveList("R");
         };
 
@@ -486,6 +503,7 @@ class Chess extends Window {
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "B" : "b";
             element.style.backgroundImage = "url(chess/bishop.svg)";
+            callback();
             updateMoveList("B");
         };
 
@@ -493,6 +511,7 @@ class Chess extends Window {
             this.content.removeChild(cover);
             this.game.placement[p.x][p.y] = color === "w" ? "N" : "n";
             element.style.backgroundImage = "url(chess/knight.svg)";
+            callback();
             updateMoveList("N");
         };
     }
