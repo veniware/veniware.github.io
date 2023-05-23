@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
@@ -123,14 +124,13 @@ func moveToString(move Move) string {
 		return ""
 	}
 
-	var s string = ""
-	s += string(97 + move.p0.x)
-	s += strconv.Itoa(8 - move.p0.y)
-	s += "-"
-	s += string(97 + move.p1.x)
-	s += strconv.Itoa(8 - move.p1.y)
-
-	return s
+	var builder strings.Builder
+	builder.WriteString(fmt.Sprintf("%c", 97+move.p0.x))
+	builder.WriteString(strconv.Itoa(8 - move.p0.y))
+	builder.WriteString("-")
+	builder.WriteString(fmt.Sprintf("%c", 97+move.p1.x))
+	builder.WriteString(strconv.Itoa(8 - move.p1.y))
+	return builder.String()
 }
 
 func printPosition(game *Game) {
@@ -425,7 +425,7 @@ func kingMoves(game *Game, color bool, p *Position) []Move {
 			game.placement[0][7].piece == 0b00001000 && game.placement[0][7].color &&
 			game.placement[1][7].piece == 0 &&
 			game.placement[2][7].piece == 0 &&
-			game.placement[3][7].piece == 0 { //white queenside castling
+			game.placement[3][7].piece == 0 { //white queen side castling
 			moves = append(moves, Move{Position{p.x, p.y}, Position{1, p.y}})
 		}
 
@@ -441,7 +441,7 @@ func kingMoves(game *Game, color bool, p *Position) []Move {
 			game.placement[0][0].piece == 0b00001000 && !game.placement[0][7].color &&
 			game.placement[1][0].piece == 0 &&
 			game.placement[2][0].piece == 0 &&
-			game.placement[3][0].piece == 0 { //black queenside castling
+			game.placement[3][0].piece == 0 { //black queen side castling
 			moves = append(moves, Move{Position{p.x, p.y}, Position{1, p.y}})
 		}
 
@@ -480,7 +480,7 @@ func getPieces(game *Game, color bool) []Position {
 	return pieces
 }
 
-func pseudolegalMoves(game *Game, color bool) []Move {
+func pseudoLegalMoves(game *Game, color bool) []Move {
 	var pieces []Position = getPieces(game, color)
 
 	var moves []Move
@@ -522,18 +522,78 @@ func pseudolegalMoves(game *Game, color bool) []Move {
 }
 
 func legalMoves(game *Game, color bool) []Move {
-	var pseudolegal []Move = pseudolegalMoves(game, color)
+	//var enemyControl [8][8]bool = getEnemyControl(game)
+	var pseudoLegal []Move = pseudoLegalMoves(game, color)
 	var moves []Move
 
-	for i := 0; i < len(pseudolegal); i++ {
-		var temp Game = makeMove(*game, pseudolegal[i])
-		if !inCheck(temp, color) {
-			moves = append(moves, pseudolegal[i])
+	for i := 0; i < len(pseudoLegal); i++ {
+		var clone Game = makeMove(*game, pseudoLegal[i])
+		if !inCheck(clone, color) {
+			moves = append(moves, pseudoLegal[i])
 		}
 	}
 
 	//TODO:
 	return moves
+}
+
+func getEnemyControl(game *Game) [8][8]bool {
+	var area [8][8]bool
+
+	var pieces []Position = getPieces(game, !game.color)
+	var moves []Move
+
+	for i := 0; i < len(pieces); i++ {
+		var piece Piece = game.placement[pieces[i].x][pieces[i].y]
+
+		switch piece.piece {
+		case 0b00000001: //p
+			if piece.color { //white
+				if pieces[i].x > 0 {
+					area[pieces[i].x-1][pieces[i].y-1] = true
+				}
+				if pieces[i].x < 7 {
+					area[pieces[i].x+1][pieces[i].y-1] = true
+				}
+			} else { //black
+				if pieces[i].x > 0 {
+					area[pieces[i].x-1][pieces[i].y+1] = true
+				}
+				if pieces[i].x < 7 {
+					area[pieces[i].x+1][pieces[i].y+1] = true
+				}
+			}
+
+		case 0b00000010: //n
+			var tmp []Move = knightMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+
+		case 0b00000100: //b
+			var tmp []Move = bishopMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+
+		case 0b00001000: //r
+			var tmp []Move = rockMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+
+		case 0b00010000: //q
+			var tmp []Move = bishopMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+
+			tmp = rockMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+
+		case 0b00100000: //k
+			var tmp []Move = kingMoves(game, piece.color, &pieces[i])
+			moves = append(moves, tmp...)
+		}
+	}
+
+	for i := 0; i < len(moves); i++ {
+		area[moves[i].p1.x][moves[i].p1.y] = true
+	}
+
+	return area
 }
 
 func makeMove(game Game, move Move) Game {
@@ -563,14 +623,14 @@ func makeMove(game Game, move Move) Game {
 	}
 	if game.placement[move.p0.x][move.p0.y].piece == 0b00001000 { //rock
 		if game.placement[move.p0.x][move.p0.y].color { //white rock
-			if move.p0.x == 0 && move.p0.y == 7 { //queenside
+			if move.p0.x == 0 && move.p0.y == 7 { //queen side
 				game.castling = strings.Replace(game.castling, "Q", "", 1)
 			}
 			if move.p0.x == 7 && move.p0.y == 7 { //kingside
 				game.castling = strings.Replace(game.castling, "K", "", 1)
 			}
 		} else { //black rock
-			if move.p0.x == 0 && move.p0.y == 0 { //queenside
+			if move.p0.x == 0 && move.p0.y == 0 { //queen side
 				game.castling = strings.Replace(game.castling, "q", "", 1)
 			}
 			if move.p0.x == 7 && move.p0.y == 0 { //kingside
@@ -585,19 +645,19 @@ func makeMove(game Game, move Move) Game {
 	//castling
 	if game.placement[move.p0.x][move.p0.y].piece == 0b00100000 {
 		if game.placement[move.p0.x][move.p0.y].color { //white king
-			if int(move.p0.x)-int(move.p1.x) == 2 { //queenside
+			if int(move.p0.x)-int(move.p1.x) == 2 { //queen side
 				game.placement[3][7] = Piece{0b00001000, true}
 				game.placement[0][7] = Piece{0, false}
-			} else if int(move.p0.x)-int(move.p1.x) == -2 { //kingside
+			} else if int(move.p0.x)-int(move.p1.x) == -2 { //king side
 				game.placement[5][7] = Piece{0b00001000, true}
 				game.placement[7][7] = Piece{0, false}
 			}
 
 		} else { //black king
-			if int(move.p0.x)-int(move.p1.x) == 2 { //queenside
+			if int(move.p0.x)-int(move.p1.x) == 2 { //queen side
 				game.placement[3][0] = Piece{0b00001000, false}
 				game.placement[0][0] = Piece{0, false}
-			} else if int(move.p0.x)-int(move.p1.x) == -2 { //kingside
+			} else if int(move.p0.x)-int(move.p1.x) == -2 { //king side
 				game.placement[5][0] = Piece{0b00001000, false}
 				game.placement[7][0] = Piece{0, false}
 			}
@@ -634,7 +694,7 @@ func inCheck(game Game, color bool) bool {
 		}
 	}
 
-	var pieces []Position = getPieces(&game, color)
+	var pieces []Position = getPieces(&game, !color)
 
 	for i := 0; i < len(pieces); i++ {
 		var piece Piece = game.placement[pieces[i].x][pieces[i].y]

@@ -398,7 +398,7 @@ class Chess extends Window {
 
             } else {
                 const callback = ()=>{
-                    let aiMove = ChessAi(fen, 1);
+                    let aiMove = ChessAi(this.GetCurrentFen(), 1);
                     if (!aiMove) throw ("ai panic");
                     if (aiMove.length < 5) return;
     
@@ -547,7 +547,7 @@ class Chess extends Window {
         return "w";
     }
 
-    GetPseudolegalMoves(p, game) {
+    GetPseudoLegalMoves(p, game) {
         let piece = game.placement[p.x][p.y];
         let color = this.GetPieceColor(p, game);
         let moves = [];
@@ -767,10 +767,10 @@ class Chess extends Window {
         const enemyColor = game.activecolor === "w" ? "b" : "w";
         
         const enemyControl = this.GetControlledSquares(game, enemyColor);
-        const pseudolegal = this.GetPseudolegalMoves(p, game);
+        const pseudoLegal = this.GetPseudoLegalMoves(p, game);
         let legal = [];
         
-        let kingsPosition = null;
+        /*let kingsPosition = null;
         let target = this.game.activecolor === "w" ? "K" : "k";
         for (let y = 0; y < 8; y++) {
             for (let x = 0; x < 8; x++) {
@@ -780,32 +780,32 @@ class Chess extends Window {
                 }
             }
             if (kingsPosition) break;
-        }
+        }*/
 
-        for (let i = 0; i < pseudolegal.length; i++) {
-            if (piece.toLowerCase() === "k") {                
-                if (enemyControl[pseudolegal[i].x][pseudolegal[i].y]) { //king is moving into a check
+        for (let i = 0; i < pseudoLegal.length; i++) {
+            if (piece.toLowerCase() === "k") {
+                if (enemyControl[pseudoLegal[i].x][pseudoLegal[i].y]) { //king moves into check
                     continue;
                 }
 
                 if (color === "w") {
-                    if (Math.abs(p.x - pseudolegal[i].x) === 2 && enemyControl[4][7]) //castling while in check
+                    if (Math.abs(p.x - pseudoLegal[i].x) === 2 && enemyControl[4][7]) //castling while in check
                         continue;
-                    if (p.x-pseudolegal[i].x === -2 && enemyControl[5][7] || p.x-pseudolegal[i].x === 2 && enemyControl[3][7]) //castling through check
+                    if (p.x-pseudoLegal[i].x === -2 && enemyControl[5][7] || p.x-pseudoLegal[i].x === 2 && enemyControl[3][7]) //castling through check
                         continue;
                 }
 
                 if (color === "b") {
-                    if (Math.abs(p.x - pseudolegal[i].x) === 2 && enemyControl[4][0]) //castling while in check
+                    if (Math.abs(p.x - pseudoLegal[i].x) === 2 && enemyControl[4][0]) //castling while in check
                         continue;
-                    if (p.x-pseudolegal[i].x === -2 && enemyControl[5][0] || p.x-pseudolegal[i].x === 2 && enemyControl[3][0]) //castling through check
-                        continue;                    
+                    if (p.x-pseudoLegal[i].x === -2 && enemyControl[5][0] || p.x-pseudoLegal[i].x === 2 && enemyControl[3][0]) //castling through check
+                        continue;
                 }
             }
 
             let clone = {
                 fen        : null,
-                placement  : JSON.parse(JSON.stringify(this.game.placement)),
+                placement  : structuredClone(this.game.placement),
                 activecolor: this.game.activecolor === "w" ? "b" : "w",
                 castling   : this.game.castling,
                 enpassant  : this.game.enpassant,
@@ -813,14 +813,14 @@ class Chess extends Window {
                 fullmove   : null,
                 lastmove   : null
             };
-            clone.placement[pseudolegal[i].x][pseudolegal[i].y] = clone.placement[p.x][p.y];
+            clone.placement[pseudoLegal[i].x][pseudoLegal[i].y] = clone.placement[p.x][p.y];
             clone.placement[p.x][p.y] = null;
             
             if (this.InCheck(clone, color)) {
                 continue;
             }
             
-            legal.push(pseudolegal[i]);
+            legal.push(pseudoLegal[i]);
         }
         
         return legal;
@@ -853,7 +853,7 @@ class Chess extends Window {
                     }
 
                 } else {
-                    let moves = this.GetPseudolegalMoves(p, game);
+                    let moves = this.GetPseudoLegalMoves(p, game);
                     for (let k = 0; k < moves.length; k++) {
                         area[moves[k].x][moves[k].y] = true;
                     }
