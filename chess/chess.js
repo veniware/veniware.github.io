@@ -31,7 +31,7 @@ class Chess extends Window {
         
         this.content.appendChild(this.board);
 
-        this.playerA = "ui";
+        this.playerA = "ai";
         this.playerB = "ai";
 
         this.game = {

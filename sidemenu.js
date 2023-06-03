@@ -13,7 +13,10 @@ const TOOLS = [
 { lbl:"Session",            ico:"res/hourglass.svg",     grp:"*", sqr:false, f:arg=> new Settings("session") },
 { lbl:"License",            ico:"res/gpl.svg",           grp:"*", sqr:false, f:arg=> new Settings("legal") },
 
-{ lbl:"Chess",              ico:"chess/king.svg",        grp:"*", sqr:true, f:arg=> new Chess()}
+{ lbl:"Keyboard tester",    ico:"res/keyboard.svg?light", grp:"utilities", sqr:true, f:arg=>new KeyboardTester() },
+{ lbl:"Gamepad tester",     ico:"res/gamepad.svg?light",  grp:"utilities", sqr:true, f:arg=>new KeyboardTester("gamepad") },
+
+{ lbl:"Chess",              ico:"chess/king.svg",        grp:"*", sqr:true, f:arg=> new Chess()},
 ];
 
 let AUTHORIZATION = {};

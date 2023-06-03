@@ -48,6 +48,7 @@ let loader_styles = [
         "tools/maclookup.js",
         "tools/locateip.js",
         "tools/encoder.js",
+        "tools/keyboardtester.js",
         "chess/chess.js"
     ];
 
@@ -151,7 +152,7 @@ function RestoreSession() {
         return;
     }
 
-    if (session == null || session.length == 0) return;    
+    if (session == null || session.length == 0) return;
 
     for (let i = 0; i < session.length; i++) {
         let win;
@@ -161,6 +162,7 @@ function RestoreSession() {
             case "MacLookup" : win = new MacLookup(session[i].args); break;
             case "LocateIp"  : win = new LocateIp(session[i].args); break;
             case "Encoder"   : win = new Encoder(session[i].args); break;
+            case "KeyboardTester"  : win = new KeyboardTester(session[i].args); break;
             case "Chess"     : win = new Chess(session[i].args); break;
             case "Settings"  : win = new Settings(session[i].args); break;
         }
